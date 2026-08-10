@@ -31,7 +31,7 @@ interface ShopProductGridProps {
 }
 
 const DEFAULT_PRIORITY_COUNT = 2;
-const DEFAULT_GRID_CLASS = "grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 md:gap-5 xl:grid-cols-4 xl:gap-6";
+const DEFAULT_GRID_CLASS = "grid grid-cols-2 gap-3.5 sm:gap-5 lg:grid-cols-3 lg:gap-6 xl:gap-8";
 
 export function ShopProductGrid({ products, categoryLabel, priorityCount = DEFAULT_PRIORITY_COUNT, gridClassName = DEFAULT_GRID_CLASS }: ShopProductGridProps) {
 	const { params, clearAll } = useFilterParams();

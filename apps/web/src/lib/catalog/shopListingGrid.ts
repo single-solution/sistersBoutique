@@ -4,12 +4,10 @@ import { STOREFRONT_SHELL_CLASS } from "@/lib/layout/storefrontShell";
 export const SHOP_CATEGORY_PAGE_CLASS = STOREFRONT_SHELL_CLASS;
 
 /**
- * Editorial listing density — fewer columns, more air than the old 5-col commerce grid.
- * Shared by category, search, deals, and glossary product grids.
- * 2 -> 3 (640) -> 4 (1280) columns; a 5th column appears only above 1536 so wide
- * screens stay dense without changing the 1440 reference (still 4 columns there).
+ * Editorial 3-card grid — spacious, luxurious 3-column layout on desktop
+ * designed specifically for portrait fashion imagery and outfits.
  */
 export const SHOP_CATEGORY_GRID_CLASS =
-	"grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 md:gap-5 xl:grid-cols-4 xl:gap-6 2xl:grid-cols-5 2xl:gap-7";
+	"grid grid-cols-2 gap-3.5 sm:gap-5 lg:grid-cols-3 lg:gap-6 xl:gap-8";
 
 export const SHOP_CATEGORY_SKELETON_CARDS = 9;
