@@ -98,7 +98,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 
 			{isMounted && isOpen
 				? createPortal(
-						<div role="dialog" aria-modal="true" aria-label="Size and fit" className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-3 sm:p-4 overscroll-contain">
+						<div role="dialog" aria-modal="true" aria-label="Size and fit" className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-2 sm:p-4 overscroll-contain">
 							{/* Backdrop */}
 							<button
 								type="button"
@@ -108,7 +108,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 							/>
 
 							{/* Portrait Modal Frame */}
-							<div className="relative flex h-[92vh] max-h-[820px] w-full max-w-[460px] flex-col overflow-hidden rounded-3xl border border-[var(--color-ink-200)] bg-[var(--color-surface)] shadow-2xl animate-dialog-in">
+							<div className="relative flex h-[92vh] max-h-[840px] w-full max-w-[460px] flex-col overflow-hidden rounded-3xl border border-[var(--color-ink-200)] bg-[var(--color-surface)] shadow-2xl animate-dialog-in">
 								{/* ── Top Header ── */}
 								<div className="flex shrink-0 items-center justify-between border-b border-[var(--color-ink-100)] bg-white/90 px-4 py-3 backdrop-blur-md z-30">
 									<h2 className="text-base font-bold text-[var(--color-ink-900)]">Size &amp; Fit</h2>
@@ -135,7 +135,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 									</div>
 								</div>
 
-								{/* ── Main Body: Edge-to-Edge Full Image ── */}
+								{/* ── Main Canvas: Full Bleed Image with Overlay Controls ── */}
 								<div className="relative flex-1 overflow-hidden">
 									{/* Full-bleed model image with overlays */}
 									<FitPreview
@@ -145,79 +145,75 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 										className="h-full w-full"
 									/>
 
-									{/* Floating Top Controls: Body Shape Toggle Bar */}
+									{/* ── Floating Top Bar: Body Shape Pills + Sliders Toggle ── */}
 									{chart && (
-										<div className="absolute top-3 inset-x-3 z-20 flex flex-col items-center gap-2 pointer-events-auto">
-											<div className="flex items-center justify-between gap-2 rounded-full border border-white/70 bg-white/85 p-1.5 shadow-lg backdrop-blur-md">
+										<div className="absolute top-2 inset-x-2 z-20 flex flex-col items-center gap-2 pointer-events-auto">
+											<div className="flex items-center justify-between gap-1.5 rounded-full border border-white/80 bg-white/90 p-1 shadow-lg backdrop-blur-md">
 												<BodyShapeToggle measurements={measurements} onChange={setMeasurements} />
 												<button
 													type="button"
-													title="Fine-tune measurements"
+													title="Fine-tune measurement sliders"
 													onClick={() => setIsCustomExpanded(!isCustomExpanded)}
-													className={`rounded-full p-1.5 transition-colors ${
-														isCustomExpanded ? "bg-[var(--color-ink-900)] text-white" : "bg-white/80 text-[var(--color-ink-700)] hover:bg-white"
+													className={`rounded-full p-1.5 transition-all ${
+														isCustomExpanded ? "bg-[var(--color-ink-900)] text-white shadow-xs" : "bg-white/80 text-[var(--color-ink-700)] hover:bg-white"
 													}`}
 												>
 													<SlidersHorizontal size={13} />
 												</button>
 											</div>
 
-											{/* Expandable Exact Measurements Box */}
+											{/* Expandable Live Sliders Container */}
 											{isCustomExpanded && (
-												<div className="w-full rounded-2xl border border-white/80 bg-white/95 p-3 shadow-xl backdrop-blur-md animate-dialog-in">
+												<div className="w-full max-w-[340px] rounded-2xl border border-white/80 bg-white/95 p-3.5 shadow-xl backdrop-blur-md animate-dialog-in">
 													<SizeFinder chart={chart} measurements={measurements} onChange={setMeasurements} />
 												</div>
 											)}
 										</div>
 									)}
-								</div>
 
-								{/* ── Modal Footer ── */}
-								{/* Left: Suggested Size & Select Button | Right: Front / Side / Back Angle Switcher */}
-								<div className="flex shrink-0 items-center justify-between border-t border-[var(--color-ink-100)] bg-white/95 px-4 py-3 backdrop-blur-md z-30">
-									{/* LEFT: Suggested Size */}
-									{recommended ? (
-										<div className="flex items-center gap-2.5">
-											<div>
-												<span className="block text-[9px] font-bold uppercase tracking-wider text-[var(--color-ink-600)]">Suggested Size</span>
-												<span className="block text-sm font-extrabold text-[var(--color-ink-900)]">{recommended.label}</span>
-											</div>
-											<button
-												type="button"
-												onClick={() => onSelectSize(recommended.sizeValue)}
-												disabled={isRecommendedSelected}
-												className="rounded-full bg-[var(--color-ink-900)] px-3 py-1 text-xs font-bold text-white transition-all disabled:opacity-50 disabled:bg-[var(--color-accent-700)]"
-											>
-												{isRecommendedSelected ? (
-													<span className="inline-flex items-center gap-1">
-														<Check size={12} /> Selected
-													</span>
-												) : (
-													"Select Size"
-												)}
-											</button>
-										</div>
-									) : (
-										<span className="text-xs font-medium text-[var(--color-ink-500)]">Select measurements</span>
-									)}
-
-									{/* RIGHT: Front / Side / Back Angle Switcher */}
-									{availableAngles.length > 1 && (
-										<div className="flex items-center gap-1 rounded-full border border-[var(--color-ink-200)] bg-[var(--color-ink-50)] p-1" aria-label="View angle">
-											{availableAngles.map((a) => (
+									{/* ── Bottom Overlay: Suggested Size & Image Angle Switcher (Centered) ── */}
+									<div className="absolute bottom-3 inset-x-0 z-20 flex flex-col items-center gap-2 pointer-events-auto">
+										{/* Suggested Size Badge (Positioned directly above the angle switcher) */}
+										{recommended && (
+											<div className="flex items-center gap-2 rounded-full border border-white/80 bg-white/95 px-3 py-1 shadow-md backdrop-blur-md">
+												<span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-ink-600)]">
+													Suggested: <strong className="text-[var(--color-ink-900)]">{recommended.label}</strong>
+												</span>
 												<button
-													key={a}
 													type="button"
-													onClick={() => setAngle(a)}
-													className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider transition-all ${
-														a === angle ? "bg-[var(--color-ink-900)] text-white shadow-xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]"
-													}`}
+													onClick={() => onSelectSize(recommended.sizeValue)}
+													disabled={isRecommendedSelected}
+													className="rounded-full bg-[var(--color-ink-900)] px-2.5 py-0.5 text-[10px] font-extrabold text-white transition-all disabled:opacity-50 disabled:bg-[var(--color-accent-700)]"
 												>
-													{ANGLE_LABELS[a]}
+													{isRecommendedSelected ? (
+														<span className="inline-flex items-center gap-1">
+															<Check size={10} /> Selected
+														</span>
+													) : (
+														"Select Size"
+													)}
 												</button>
-											))}
-										</div>
-									)}
+											</div>
+										)}
+
+										{/* Angle Switcher (Centered at bottom of image) */}
+										{availableAngles.length > 1 && (
+											<div className="flex items-center gap-1 rounded-full border border-white/80 bg-white/90 p-1 shadow-lg backdrop-blur-md" aria-label="View angle">
+												{availableAngles.map((a) => (
+													<button
+														key={a}
+														type="button"
+														onClick={() => setAngle(a)}
+														className={`rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider transition-all ${
+															a === angle ? "bg-[var(--color-ink-900)] text-white shadow-xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]"
+														}`}
+													>
+														{ANGLE_LABELS[a]}
+													</button>
+												))}
+											</div>
+										)}
+									</div>
 								</div>
 
 								{/* Sub-Modal: Size Table Modal Overlay */}

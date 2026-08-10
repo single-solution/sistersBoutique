@@ -13,22 +13,17 @@ interface MeasurementField {
 }
 
 const FIELDS: MeasurementField[] = [
-	{ key: "bust", label: "Bust", min: 24, max: 60 },
-	{ key: "waist", label: "Waist", min: 20, max: 60 },
-	{ key: "hip", label: "Hip", min: 24, max: 65 },
+	{ key: "bust", label: "Bust", min: 28, max: 54 },
+	{ key: "waist", label: "Waist", min: 22, max: 48 },
+	{ key: "hip", label: "Hip", min: 32, max: 58 },
 ];
 
 type MeasurementUnit = "in" | "cm";
-type MeasurementValues = Record<keyof BodyMeasurements, string>;
 
-function displayMeasurement(valueInches: number | undefined, unit: MeasurementUnit): string {
-	if (valueInches === undefined) return "";
-	const value = unit === "cm" ? valueInches * INCH_TO_CM : valueInches;
-	return String(Math.round(value * 10) / 10);
-}
-
-function buildMeasurementValues(measurements: BodyMeasurements, unit: MeasurementUnit): MeasurementValues {
-	return Object.fromEntries(FIELDS.map((field) => [field.key, displayMeasurement(measurements[field.key], unit)])) as MeasurementValues;
+function displayValue(valueInches: number | undefined, unit: MeasurementUnit): number {
+	if (valueInches === undefined) return 0;
+	const val = unit === "cm" ? valueInches * INCH_TO_CM : valueInches;
+	return Math.round(val * 10) / 10;
 }
 
 interface SizeFinderProps {
@@ -39,38 +34,21 @@ interface SizeFinderProps {
 
 export function SizeFinder({ chart, measurements, onChange }: SizeFinderProps) {
 	const [unit, setUnit] = useState<MeasurementUnit>("in");
-	const [measurementValues, setMeasurementValues] = useState<MeasurementValues>(() => buildMeasurementValues(measurements, "in"));
 
-	const handleField = (key: keyof BodyMeasurements, raw: string) => {
-		setMeasurementValues((currentValues) => ({ ...currentValues, [key]: raw }));
-		const parsed = Number.parseFloat(raw);
-		const field = FIELDS.find((candidate) => candidate.key === key);
-		if (!field || !Number.isFinite(parsed)) return;
-
-		const valueInches = unit === "cm" ? parsed / INCH_TO_CM : parsed;
-		if (valueInches < field.min || valueInches > field.max) return;
-
+	const handleSlider = (key: keyof BodyMeasurements, rawValue: number) => {
+		const valueInches = unit === "cm" ? rawValue / INCH_TO_CM : rawValue;
 		onChange({ ...measurements, [key]: Math.round(valueInches * 10) / 10 });
-	};
-
-	const handleShapeSelect = (shapeKey: BodyShape) => {
-		const defaults = BODY_SHAPE_DEFAULTS[shapeKey];
-		setMeasurementValues(buildMeasurementValues(defaults, unit));
-		onChange({ ...defaults });
 	};
 
 	const handleUnitChange = (nextUnit: MeasurementUnit) => {
 		setUnit(nextUnit);
-		setMeasurementValues(buildMeasurementValues(measurements, nextUnit));
 	};
 
-	const currentShape = classifyBodyShape(measurements) ?? "";
-
 	return (
-		<div className="space-y-3">
-			{/* Unit Toggle */}
+		<div className="space-y-3.5">
+			{/* Unit Selector */}
 			<div className="flex items-center justify-between">
-				<span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-ink-600)]">Detailed Inches/CM</span>
+				<span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-ink-700)]">Live Measurement Sliders</span>
 				<div className="flex rounded-full border border-[var(--color-ink-200)] bg-white/80 p-0.5" aria-label="Measurement unit">
 					{(["in", "cm"] as const).map((unitOption) => (
 						<button
@@ -88,23 +66,39 @@ export function SizeFinder({ chart, measurements, onChange }: SizeFinderProps) {
 				</div>
 			</div>
 
-			{/* Quick Inputs: Bust, Waist, Hip */}
-			<div className="grid grid-cols-3 gap-2">
-				{FIELDS.map((field) => (
-					<div key={field.key} className="space-y-0.5">
-						<label className="text-[9px] font-bold uppercase tracking-wider text-[var(--color-ink-600)]">
-							{field.label} ({unit})
-						</label>
-						<input
-							type="number"
-							inputMode="decimal"
-							step={unit === "cm" ? "0.5" : "0.5"}
-							value={measurementValues[field.key]}
-							onChange={(e) => handleField(field.key, e.target.value)}
-							className="w-full rounded-lg border border-[var(--color-ink-200)] bg-white/90 px-2 py-1 text-xs font-semibold text-[var(--color-ink-900)] shadow-2xs backdrop-blur-xs focus:border-[var(--color-ink-900)] focus:outline-hidden"
-						/>
-					</div>
-				))}
+			{/* Interactive Range Sliders */}
+			<div className="space-y-3">
+				{FIELDS.map((field) => {
+					const valInches = measurements[field.key] ?? field.min;
+					const currentVal = displayValue(valInches, unit);
+					const minVal = displayValue(field.min, unit);
+					const maxVal = displayValue(field.max, unit);
+					const step = unit === "cm" ? 0.5 : 0.5;
+
+					return (
+						<div key={field.key} className="space-y-1">
+							<div className="flex items-center justify-between text-xs font-semibold text-[var(--color-ink-900)]">
+								<label htmlFor={`slider-${field.key}`} className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-ink-600)]">
+									{field.label}
+								</label>
+								<span className="rounded-md bg-[var(--color-ink-100)] px-2 py-0.5 font-mono text-xs font-bold text-[var(--color-ink-900)]">
+									{currentVal} {unit}
+								</span>
+							</div>
+
+							<input
+								id={`slider-${field.key}`}
+								type="range"
+								min={minVal}
+								max={maxVal}
+								step={step}
+								value={currentVal}
+								onChange={(e) => handleSlider(field.key, Number.parseFloat(e.target.value))}
+								className="w-full accent-[var(--color-ink-900)] cursor-pointer h-1.5 rounded-lg bg-[var(--color-ink-200)]"
+							/>
+						</div>
+					);
+				})}
 			</div>
 		</div>
 	);
