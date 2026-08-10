@@ -133,7 +133,10 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 													/>
 												</div>
 												<div className="w-full sm:w-2/5 min-w-36 max-w-48 sm:max-w-56 shrink-0">
-													<FitPreview measurements={previewMeasurements} garment={hemlines} />
+													<FitPreview
+													measurements={{ bust: previewBust, waist: previewWaist, hip: previewHip }}
+													garment={hemlines}
+												/>
 												</div>
 											</div>
 											<SizeGuide chart={chart} selectedSizeValue={selectedSizeValue} />
