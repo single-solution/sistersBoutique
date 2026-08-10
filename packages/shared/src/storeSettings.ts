@@ -144,7 +144,7 @@ export function hasBankTransferDetailsConfigured(settings: Pick<StoreSettings, "
 }
 
 export const STORE_SETTING_DEFAULTS: StoreSettings = {
-	siteName: "Ibrahim Mobile Store",
+	siteName: "Sister's Outfits",
 	siteTagline: "",
 	publicSiteUrl: "",
 

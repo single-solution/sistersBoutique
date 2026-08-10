@@ -309,7 +309,7 @@ export function SeoSettingsTab({ readOnly = false }: { readOnly?: boolean }) {
 							label="Legal name"
 							value={draft.organizationLegalName}
 							onChange={(event) => setField("organizationLegalName", event.target.value)}
-							placeholder="e.g. Ibrahim Mobiles (Pvt.) Ltd"
+							placeholder="e.g. Sister's Outfits"
 							disabled={readOnly}
 						/>
 						<TextField
