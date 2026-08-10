@@ -34,7 +34,6 @@ function getRangeForKey(chart: SizeChart, key: string): { min: number; max: numb
 		};
 	}
 
-	// Fallbacks for standard keys
 	if (key === "bust") return { min: 26, max: 56 };
 	if (key === "waist") return { min: 20, max: 52 };
 	if (key === "hip") return { min: 30, max: 62 };
@@ -59,13 +58,9 @@ export function SizeFinder({ chart, measurements, unit, onChange, className = ""
 	};
 
 	return (
-		<div className={`space-y-2 select-none ${className}`}>
-			<div className="flex items-center justify-between pb-1 border-b border-[var(--color-ink-100)]/60">
-				<span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-ink-800)]">Fit Parameters</span>
-				<span className="text-[9px] font-bold uppercase text-[var(--color-ink-500)]">{unit}</span>
-			</div>
-
-			<div className="space-y-2 max-h-[220px] overflow-y-auto pr-1 scrollbar-thin">
+		<div className={`space-y-3 select-none ${className}`}>
+			{/* All measurement sliders render cleanly without inner card scrolling */}
+			<div className="space-y-3.5">
 				{fields.map((field) => {
 					const valInches = measurements[field.key] ?? field.min;
 					const currentVal = displayValue(valInches, unit);
@@ -74,12 +69,12 @@ export function SizeFinder({ chart, measurements, unit, onChange, className = ""
 					const step = unit === "cm" ? 0.5 : 0.5;
 
 					return (
-						<div key={field.key} className="space-y-0.5">
-							<div className="flex items-center justify-between text-[11px] font-semibold text-[var(--color-ink-900)]">
-								<label htmlFor={`slider-${field.key}`} className="text-[9.5px] font-bold uppercase tracking-wider text-[var(--color-ink-700)]">
+						<div key={field.key} className="space-y-1">
+							<div className="flex items-center justify-between text-xs font-semibold text-[var(--color-ink-900)]">
+								<label htmlFor={`slider-${field.key}`} className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-ink-700)]">
 									{field.label}
 								</label>
-								<span className="rounded bg-white/90 px-1.5 py-0.5 font-mono text-[10px] font-extrabold text-[var(--color-ink-900)] shadow-2xs">
+								<span className="rounded bg-white/90 px-2 py-0.5 font-mono text-[11px] font-extrabold text-[var(--color-ink-900)] shadow-2xs">
 									{currentVal} {unit}
 								</span>
 							</div>
