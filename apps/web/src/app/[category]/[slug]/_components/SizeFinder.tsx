@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { classNames, type SizeChart } from "@store/shared";
 
-import { classifyBodyShape, BODY_SHAPE_DEFAULTS, BODY_SHAPE_LABEL, BODY_SHAPE_ORDER, INCH_TO_CM, type BodyMeasurements, type BodyShape } from "@/lib/catalog/sizeFit";
+import { INCH_TO_CM, type BodyMeasurements } from "@/lib/catalog/sizeFit";
 
 interface MeasurementField {
 	key: keyof BodyMeasurements;
@@ -40,12 +40,8 @@ export function SizeFinder({ chart, measurements, onChange }: SizeFinderProps) {
 		onChange({ ...measurements, [key]: Math.round(valueInches * 10) / 10 });
 	};
 
-	const handleUnitChange = (nextUnit: MeasurementUnit) => {
-		setUnit(nextUnit);
-	};
-
 	return (
-		<div className="space-y-3.5">
+		<div className="space-y-3">
 			{/* Unit Selector */}
 			<div className="flex items-center justify-between">
 				<span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-ink-700)]">Live Measurement Sliders</span>
@@ -54,7 +50,7 @@ export function SizeFinder({ chart, measurements, onChange }: SizeFinderProps) {
 						<button
 							key={unitOption}
 							type="button"
-							onClick={() => handleUnitChange(unitOption)}
+							onClick={() => setUnit(unitOption)}
 							className={classNames(
 								"rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase transition-colors",
 								unit === unitOption ? "bg-[var(--color-ink-900)] text-white" : "text-[var(--color-ink-500)]",
@@ -67,7 +63,7 @@ export function SizeFinder({ chart, measurements, onChange }: SizeFinderProps) {
 			</div>
 
 			{/* Interactive Range Sliders */}
-			<div className="space-y-3">
+			<div className="space-y-2.5">
 				{FIELDS.map((field) => {
 					const valInches = measurements[field.key] ?? field.min;
 					const currentVal = displayValue(valInches, unit);
@@ -81,7 +77,7 @@ export function SizeFinder({ chart, measurements, onChange }: SizeFinderProps) {
 								<label htmlFor={`slider-${field.key}`} className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-ink-600)]">
 									{field.label}
 								</label>
-								<span className="rounded-md bg-[var(--color-ink-100)] px-2 py-0.5 font-mono text-xs font-bold text-[var(--color-ink-900)]">
+								<span className="rounded-md bg-[var(--color-ink-100)] px-2 py-0.5 font-mono text-[11px] font-bold text-[var(--color-ink-900)]">
 									{currentVal} {unit}
 								</span>
 							</div>
@@ -100,45 +96,6 @@ export function SizeFinder({ chart, measurements, onChange }: SizeFinderProps) {
 					);
 				})}
 			</div>
-		</div>
-	);
-}
-
-/** Standalone Body Shape Selector component for floating top image bar */
-export function BodyShapeToggle({
-	measurements,
-	onChange,
-}: {
-	measurements: BodyMeasurements;
-	onChange: (next: BodyMeasurements) => void;
-}) {
-	const currentShape = classifyBodyShape(measurements) ?? "";
-
-	const handleShapeSelect = (shapeKey: BodyShape) => {
-		const defaults = BODY_SHAPE_DEFAULTS[shapeKey];
-		onChange({ ...defaults });
-	};
-
-	return (
-		<div className="flex flex-wrap items-center justify-center gap-1">
-			{BODY_SHAPE_ORDER.map((shapeKey) => {
-				const isActive = currentShape === shapeKey;
-				return (
-					<button
-						key={shapeKey}
-						type="button"
-						onClick={() => handleShapeSelect(shapeKey)}
-						className={classNames(
-							"rounded-full px-2.5 py-0.5 text-[10px] font-bold transition-all",
-							isActive
-								? "bg-[var(--color-ink-900)] text-white shadow-xs"
-								: "bg-white/80 text-[var(--color-ink-700)] border border-white/60 hover:bg-white",
-						)}
-					>
-						{BODY_SHAPE_LABEL[shapeKey]}
-					</button>
-				);
-			})}
 		</div>
 	);
 }

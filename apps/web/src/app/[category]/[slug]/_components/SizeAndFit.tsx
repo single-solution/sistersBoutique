@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { Ruler, Table2, X, SlidersHorizontal, Check } from "lucide-react";
+import { Ruler, Table2, X, SlidersHorizontal } from "lucide-react";
 import { classNames, type SizeChart, type SizeChartRow } from "@store/shared";
 
 import { SizeGuide } from "./SizeGuide";
-import { SizeFinder, BodyShapeToggle } from "./SizeFinder";
+import { SizeFinder } from "./SizeFinder";
 import { FitPreview, ANGLES, ANGLE_LABELS, hasAngleImages, type ViewAngle } from "./FitPreview";
 import { DEFAULT_BODY_INPUT_MEASUREMENTS, DEFAULT_BODY_MEASUREMENTS, recommendSize, type BodyMeasurements } from "@/lib/catalog/sizeFit";
 
@@ -14,7 +14,7 @@ interface SizeAndFitProps {
 	garmentType: "stitched" | "unstitched";
 	chart: SizeChart | null;
 	selectedSizeValue: string | null;
-	onSelectSize: (sizeValue: string) => void;
+	onSelectSize?: (sizeValue: string) => void;
 	fabricLabel?: string;
 	piecesLabel?: string;
 	className?: string;
@@ -34,7 +34,7 @@ function garmentHemlines(chart: SizeChart, row: SizeChartRow | null): Array<{ la
 	return hemlines;
 }
 
-export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize, fabricLabel, piecesLabel, className }: SizeAndFitProps) {
+export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel, piecesLabel, className }: SizeAndFitProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isTableOpen, setIsTableOpen] = useState(false);
 	const [isCustomExpanded, setIsCustomExpanded] = useState(false);
@@ -78,7 +78,6 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 	const previewHip = measurements.hip ?? previewRow?.values.hip ?? DEFAULT_BODY_MEASUREMENTS.hip;
 	const hemlines = chart ? garmentHemlines(chart, previewRow) : [];
 
-	const isRecommendedSelected = recommended != null && recommended.sizeValue === selectedSizeValue;
 	const availableAngles = ANGLES.filter(hasAngleImages);
 	const triggerLabel = garmentType === "unstitched" ? "Fit & tailoring" : "Size guide";
 
@@ -98,7 +97,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 
 			{isMounted && isOpen
 				? createPortal(
-						<div role="dialog" aria-modal="true" aria-label="Size and fit" className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-2 sm:p-4 overscroll-contain">
+						<div role="dialog" aria-modal="true" aria-label="Size and fit" className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-3 sm:p-4 overscroll-contain">
 							{/* Backdrop */}
 							<button
 								type="button"
@@ -107,8 +106,8 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 								className="absolute inset-0 bg-black/65 backdrop-blur-xs transition-opacity"
 							/>
 
-							{/* Portrait Modal Frame */}
-							<div className="relative flex h-[92vh] max-h-[840px] w-full max-w-[460px] flex-col overflow-hidden rounded-3xl border border-[var(--color-ink-200)] bg-[var(--color-surface)] shadow-2xl animate-dialog-in">
+							{/* Tight Picture-Sized Modal Frame */}
+							<div className="relative flex w-full max-w-[400px] flex-col overflow-hidden rounded-3xl border border-[var(--color-ink-200)] bg-[var(--color-surface)] shadow-2xl animate-dialog-in">
 								{/* ── Top Header ── */}
 								<div className="flex shrink-0 items-center justify-between border-b border-[var(--color-ink-100)] bg-white/90 px-4 py-3 backdrop-blur-md z-30">
 									<h2 className="text-base font-bold text-[var(--color-ink-900)]">Size &amp; Fit</h2>
@@ -135,9 +134,9 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 									</div>
 								</div>
 
-								{/* ── Main Canvas: Edge-to-Edge Full Image ── */}
-								<div className="relative flex-1 overflow-hidden">
-									{/* Full-bleed model image with overlays */}
+								{/* ── Main Body: Picture Sized Aspect Ratio Container ── */}
+								<div className="relative w-full aspect-[3/4] overflow-hidden bg-[#f5f3f0]">
+									{/* Full-bleed model image */}
 									<FitPreview
 										measurements={{ bust: previewBust, waist: previewWaist, hip: previewHip }}
 										garment={hemlines}
@@ -145,28 +144,26 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 										className="h-full w-full"
 									/>
 
-									{/* ── Floating Top Bar: Body Shape Pills + Sliders Toggle ── */}
+									{/* ── Floating Top-Right: Adjust Sliders Button & Popover ── */}
 									{chart && (
-										<div className="absolute top-2 inset-x-2 z-20 flex items-center justify-between pointer-events-auto">
-											<div className="mx-auto flex items-center gap-1.5 rounded-full border border-white/80 bg-white/90 p-1 shadow-lg backdrop-blur-md">
-												<BodyShapeToggle measurements={measurements} onChange={setMeasurements} />
-												<button
-													type="button"
-													title="Fine-tune measurement sliders"
-													onClick={() => setIsCustomExpanded(!isCustomExpanded)}
-													className={`rounded-full p-1.5 transition-all ${
-														isCustomExpanded ? "bg-[var(--color-ink-900)] text-white shadow-xs" : "bg-white/80 text-[var(--color-ink-700)] hover:bg-white"
-													}`}
-												>
-													<SlidersHorizontal size={13} />
-												</button>
-											</div>
+										<div className="absolute top-3 right-3 z-20 pointer-events-auto">
+											<button
+												type="button"
+												title="Adjust measurement sliders"
+												onClick={() => setIsCustomExpanded(!isCustomExpanded)}
+												className={`flex items-center gap-1.5 rounded-full border border-white/80 px-3 py-1 text-xs font-bold shadow-lg backdrop-blur-md transition-all ${
+													isCustomExpanded ? "bg-[var(--color-ink-900)] text-white" : "bg-white/90 text-[var(--color-ink-800)] hover:bg-white"
+												}`}
+											>
+												<SlidersHorizontal size={13} />
+												Adjust Fit
+											</button>
 
-											{/* Expandable Live Sliders Card (Anchored top-right popup) */}
+											{/* Expandable Live Sliders Card */}
 											{isCustomExpanded && (
-												<div className="absolute top-11 right-2 z-30 w-[270px] rounded-2xl border border-white/90 bg-white/95 p-3.5 shadow-2xl backdrop-blur-md animate-dialog-in">
+												<div className="absolute top-10 right-0 z-30 w-[270px] rounded-2xl border border-white/90 bg-white/95 p-3.5 shadow-2xl backdrop-blur-md animate-dialog-in">
 													<div className="flex items-center justify-between pb-1 mb-2 border-b border-[var(--color-ink-100)]">
-														<span className="text-[11px] font-extrabold uppercase tracking-wider text-[var(--color-ink-900)]">Live Sliders</span>
+														<span className="text-[11px] font-extrabold uppercase tracking-wider text-[var(--color-ink-900)]">Adjust Measurements</span>
 														<button
 															type="button"
 															onClick={() => setIsCustomExpanded(false)}
@@ -183,23 +180,10 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 
 									{/* ── Bottom Overlay: Suggested Size & Image Angle Switcher (Centered) ── */}
 									<div className="absolute bottom-3 inset-x-0 z-20 flex flex-col items-center gap-2 pointer-events-auto">
-										{/* Suggested Size Pill: "✓ Size [L] Selected" or "Select Size [L]" */}
+										{/* Informational Suggested Size Badge (Purely guidance, no selection button) */}
 										{recommended && (
-											<div>
-												{isRecommendedSelected ? (
-													<div className="inline-flex items-center gap-1.5 rounded-full border border-white/80 bg-[var(--color-ink-900)] px-3.5 py-1 text-[11px] font-extrabold text-white shadow-md backdrop-blur-md">
-														<Check size={12} className="text-emerald-400" />
-														Size {recommended.label} Selected
-													</div>
-												) : (
-													<button
-														type="button"
-														onClick={() => onSelectSize(recommended.sizeValue)}
-														className="inline-flex items-center gap-1.5 rounded-full border border-white/90 bg-white/95 px-3.5 py-1 text-[11px] font-extrabold text-[var(--color-ink-900)] shadow-md backdrop-blur-md hover:bg-white hover:scale-105 transition-all"
-													>
-														Select Size {recommended.label}
-													</button>
-												)}
+											<div className="rounded-full border border-white/80 bg-white/95 px-4 py-1 text-xs font-extrabold text-[var(--color-ink-900)] shadow-md backdrop-blur-md">
+												Suggested Size: <span className="text-[var(--color-accent-700)]">{recommended.label}</span>
 											</div>
 										)}
 
