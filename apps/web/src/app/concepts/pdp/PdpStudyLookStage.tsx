@@ -9,14 +9,16 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 
 import type { PdpStudyLook } from "./pdpStudySample";
 import styles from "./pdpStudy.module.css";
+import { usePresence } from "@/components/shared/motion/usePresence";
 
 gsap.registerPlugin(useGSAP);
+
+const FULL_VIEW_EXIT_MS = 220;
 
 interface PdpStudyLookStageProps {
 	looks: PdpStudyLook[];
@@ -152,10 +154,16 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 	const trackRef = useRef<HTMLDivElement>(null);
 	const [index, setIndex] = useState(0);
 	const [isFullView, setIsFullView] = useState(false);
+	const { isMounted: fullViewMounted, status: fullViewStatus } = usePresence(isFullView, FULL_VIEW_EXIT_MS);
+	const fullViewClosing = fullViewStatus === "closing";
+
 	const indexRef = useRef(0);
 	const hasLaidOut = useRef(false);
 	const reducedMotion = useRef(false);
 	const pointerHandledRef = useRef(false);
+	const dragStartX = useRef<number | null>(null);
+	const dragStartY = useRef<number | null>(null);
+
 	const count = looks.length;
 	const active = looks[index] ?? looks[0];
 
@@ -427,6 +435,36 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 		{ scope: rootRef, dependencies: [index, count, layoutRibbon, playEntrance] },
 	);
 
+	const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+		if (event.pointerType === "mouse" && event.button !== 0) {
+			return;
+		}
+		dragStartX.current = event.clientX;
+		dragStartY.current = event.clientY;
+	};
+
+	const onPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+		if (dragStartX.current === null) {
+			return;
+		}
+		const deltaX = event.clientX - dragStartX.current;
+		const deltaY = event.clientY - (dragStartY.current ?? event.clientY);
+		dragStartX.current = null;
+		dragStartY.current = null;
+
+		if (Math.abs(deltaX) > 28 && Math.abs(deltaX) > Math.abs(deltaY)) {
+			pointerHandledRef.current = true;
+			if (deltaX < 0) {
+				goTo(indexRef.current + 1);
+			} else {
+				goTo(indexRef.current - 1);
+			}
+			return;
+		}
+
+		onTrackPointerUpCapture(event);
+	};
+
 	const onTrackPointerUpCapture = (event: React.PointerEvent<HTMLDivElement>) => {
 		if (event.pointerType === "mouse" && event.button !== 0) {
 			return;
@@ -451,7 +489,13 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 			aria-label="Garment looks"
 		>
 			<div className={styles.ribbonViewport}>
-				<div ref={trackRef} className={styles.ribbonTrack} onPointerUpCapture={onTrackPointerUpCapture} role="presentation">
+				<div
+					ref={trackRef}
+					className={styles.ribbonTrack}
+					onPointerDown={onPointerDown}
+					onPointerUp={onPointerUp}
+					role="presentation"
+				>
 					{looks.map((look, lookIndex) => {
 						const isActive = lookIndex === index;
 						return (
@@ -495,21 +539,11 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 						);
 					})}
 				</div>
-				{count > 1 ? (
-					<div className={styles.ribbonNav} role="group" aria-label="Look navigation">
-						<button type="button" className={`${styles.ribbonNavButton} ${styles.ribbonNavPrev}`} aria-label="Previous look" onClick={() => goTo(index - 1)}>
-							<ChevronLeft size={20} strokeWidth={1.75} aria-hidden />
-						</button>
-						<button type="button" className={`${styles.ribbonNavButton} ${styles.ribbonNavNext}`} aria-label="Next look" onClick={() => goTo(index + 1)}>
-							<ChevronRight size={20} strokeWidth={1.75} aria-hidden />
-						</button>
-					</div>
-				) : null}
 			</div>
 
-			{isFullView && active ? (
+			{fullViewMounted && active ? (
 				<div
-					className={styles.lookFullView}
+					className={`${styles.lookFullView} ${fullViewClosing ? "animate-sheet-fade-out" : "animate-sheet-fade"}`}
 					role="dialog"
 					aria-modal="true"
 					aria-label={active.label}
@@ -518,7 +552,10 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 					<button type="button" className={styles.lookFullClose} aria-label="Close full view" onClick={() => setIsFullView(false)}>
 						Close
 					</button>
-					<div className={styles.lookFullFrame} onClick={(event) => event.stopPropagation()}>
+					<div
+						className={`${styles.lookFullFrame} ${fullViewClosing ? "animate-lightbox-out" : "animate-lightbox-in"}`}
+						onClick={(event) => event.stopPropagation()}
+					>
 						<Image src={active.src} alt={active.alt} fill sizes="100vw" className={styles.lookFullImage} priority draggable={false} />
 					</div>
 				</div>
