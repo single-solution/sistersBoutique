@@ -94,87 +94,145 @@ function BodyIllustration({ bodyState, garment }: BodyIllustrationProps) {
 	const kameezPath = buildKameezPath(landmarks);
 	const leftShalwarPath = buildLeftShalwarPath(landmarks);
 
+	const kameezLengthInches = garment?.find((g) => /kameez|shirt|hem/i.test(g.label))?.lengthInches ?? 39;
+	const trouserLengthInches = garment?.find((g) => /trouser|shalwar|bottom/i.test(g.label))?.lengthInches ?? 38;
+
+	const bustLeftX = BODY_CENTER_X - landmarks.bustHalfWidth - 6;
+	const bustRightX = BODY_CENTER_X + landmarks.bustHalfWidth + 6;
+	const waistLeftX = BODY_CENTER_X - landmarks.waistHalfWidth - 6;
+	const waistRightX = BODY_CENTER_X + landmarks.waistHalfWidth + 6;
+	const hipLeftX = BODY_CENTER_X - landmarks.hipHalfWidth - 6;
+	const hipRightX = BODY_CENTER_X + landmarks.hipHalfWidth + 6;
+
+	const kameezHemY = landmarks.kneeY - 10;
+	const kameezDimX = 26;
+	const trouserDimX = 214;
+
 	return (
 		<svg
-			viewBox={`20 0 200 ${landmarks.floorY + BODY_CANVAS_BOTTOM_MARGIN}`}
-			className="h-full w-full drop-shadow-sm"
+			viewBox="0 0 240 375"
+			className="h-full w-full select-none drop-shadow-md"
 			preserveAspectRatio="xMidYMid meet"
 			role="img"
-			aria-label="Body-shape preview"
+			aria-label="3D Shalwar Kameez Fit Model"
 		>
 			<defs>
+				{/* 3D Studio Mannequin Lighting Gradients */}
+				<radialGradient id="headShade" cx="35%" cy="30%" r="70%">
+					<stop offset="0%" stopColor="#ffffff" />
+					<stop offset="60%" stopColor="#e8e2dc" />
+					<stop offset="100%" stopColor="#c4bbb1" />
+				</radialGradient>
 				<linearGradient id="mannequinBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-					<stop offset="0%" stopColor="var(--color-surface)" />
-					<stop offset="50%" stopColor="var(--color-canvas)" />
-					<stop offset="100%" stopColor="var(--color-canvas-deep)" />
+					<stop offset="0%" stopColor="#f5f0eb" />
+					<stop offset="50%" stopColor="#e2d8ce" />
+					<stop offset="100%" stopColor="#c9bea4" />
 				</linearGradient>
-				<linearGradient id="kameezGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-					<stop offset="0%" stopColor="var(--color-accent-100)" stopOpacity="0.9" />
-					<stop offset="100%" stopColor="var(--color-accent-200)" stopOpacity="0.85" />
+
+				{/* Silk Outfit Gradients */}
+				<linearGradient id="kameezSilkGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+					<stop offset="0%" stopColor="#f8f3eb" />
+					<stop offset="40%" stopColor="#ede3d5" />
+					<stop offset="100%" stopColor="#d9c9b5" />
 				</linearGradient>
-				<linearGradient id="shalwarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-					<stop offset="0%" stopColor="var(--color-ink-100)" stopOpacity="0.85" />
-					<stop offset="100%" stopColor="var(--color-ink-200)" stopOpacity="0.9" />
+				<linearGradient id="shalwarSilkGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+					<stop offset="0%" stopColor="#eae1d6" />
+					<stop offset="100%" stopColor="#d2c4b3" />
 				</linearGradient>
+
+				{/* Double-Headed Arrowhead Markers */}
+				<marker id="arrowLeft" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+					<path d="M 8 1 L 2 5 L 8 9 Z" fill="var(--color-ink-900)" />
+				</marker>
+				<marker id="arrowRight" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+					<path d="M 2 1 L 8 5 L 2 9 Z" fill="var(--color-ink-900)" />
+				</marker>
+				<marker id="accentArrowUp" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+					<path d="M 8 1 L 2 5 L 8 9 Z" fill="var(--color-accent-700)" />
+				</marker>
+				<marker id="accentArrowDown" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+					<path d="M 2 1 L 8 5 L 2 9 Z" fill="var(--color-accent-700)" />
+				</marker>
 			</defs>
 
-			{/* Underlying Mannequin Base */}
-			<g fill="url(#mannequinBodyGrad)" stroke="var(--color-ink-300)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-				<path d={leftLegPath} />
-				<path d={leftLegPath} transform="translate(240 0) scale(-1 1)" />
-				<ellipse cx={BODY_CENTER_X} cy="32" rx="15" ry="21" />
-				<path d={torsoPath} />
-				<path d={leftArmPath} />
-				<path d={leftArmPath} transform="translate(240 0) scale(-1 1)" />
+			{/* Underlying 3D Studio Mannequin Body Base */}
+			<g stroke="#9e9183" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+				{/* Legs */}
+				<path d={leftLegPath} fill="url(#mannequinBodyGrad)" />
+				<path d={leftLegPath} fill="url(#mannequinBodyGrad)" transform="translate(240 0) scale(-1 1)" />
+				{/* 3D Oval Head */}
+				<ellipse cx={BODY_CENTER_X} cy="30" rx="15" ry="21" fill="url(#headShade)" stroke="#9e9183" strokeWidth="1.2" />
+				{/* Torso */}
+				<path d={torsoPath} fill="url(#mannequinBodyGrad)" />
+				{/* Arms */}
+				<path d={leftArmPath} fill="url(#mannequinBodyGrad)" />
+				<path d={leftArmPath} fill="url(#mannequinBodyGrad)" transform="translate(240 0) scale(-1 1)" />
 			</g>
 
-			{/* Shalwar / Trouser Outfit Layer */}
-			<g fill="url(#shalwarGrad)" stroke="var(--color-ink-600)" strokeWidth="1.2" strokeLinecap="round">
+			{/* Shalwar / Trouser Pants Layer */}
+			<g fill="url(#shalwarSilkGrad)" stroke="#877867" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
 				<path d={leftShalwarPath} />
 				<path d={leftShalwarPath} transform="translate(240 0) scale(-1 1)" />
+				{/* Trouser Ankle Cuff Folds (*Poncha*) */}
+				<line x1={BODY_CENTER_X - landmarks.ankleHalfWidth - 3} y1={landmarks.ankleY} x2={BODY_CENTER_X - landmarks.ankleHalfWidth + 9} y2={landmarks.ankleY} stroke="#6b5e4f" strokeWidth="1.4" />
+				<line x1={BODY_CENTER_X + landmarks.ankleHalfWidth - 9} y1={landmarks.ankleY} x2={BODY_CENTER_X + landmarks.ankleHalfWidth + 3} y2={landmarks.ankleY} stroke="#6b5e4f" strokeWidth="1.4" />
 			</g>
 
-			{/* Kameez (Shirt/Tunic) Outfit Layer */}
-			<g fill="url(#kameezGrad)" stroke="var(--color-accent-700)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+			{/* Kameez (Shirt / Tunic) Outfit Layer */}
+			<g fill="url(#kameezSilkGrad)" stroke="#7a6b5a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
 				<path d={kameezPath} />
+				{/* Placket / Embroidered Collar Neckline Accent */}
+				<path d={`M ${BODY_CENTER_X - 9} ${landmarks.neckY + 2} L ${BODY_CENTER_X} ${landmarks.neckY + 16} L ${BODY_CENTER_X + 9} ${landmarks.neckY + 2}`} fill="none" stroke="var(--color-accent-700)" strokeWidth="1.6" />
+				<line x1={BODY_CENTER_X} y1={landmarks.neckY + 16} x2={BODY_CENTER_X} y2={landmarks.bustY - 8} stroke="var(--color-accent-700)" strokeWidth="1.4" />
+				{/* Side Slit (*Chaak*) Lines */}
+				<line x1={BODY_CENTER_X - landmarks.hipHalfWidth - 5} y1={landmarks.hipY + 12} x2={BODY_CENTER_X - landmarks.hipHalfWidth - 5} y2={kameezHemY} stroke="#6e5f50" strokeWidth="1" strokeDasharray="2 2" />
+				<line x1={BODY_CENTER_X + landmarks.hipHalfWidth + 5} y1={landmarks.hipY + 12} x2={BODY_CENTER_X + landmarks.hipHalfWidth + 5} y2={kameezHemY} stroke="#6e5f50" strokeWidth="1" strokeDasharray="2 2" />
 			</g>
 
-			{/* Measurement Guidelines & Labels */}
-			<g fill="none" stroke="var(--color-ink-600)" strokeWidth="1" strokeLinecap="round" opacity="0.85">
-				{/* Neckline Accent */}
-				<path d={`M${BODY_CENTER_X - 10} ${landmarks.neckY + 2} Q${BODY_CENTER_X} ${landmarks.neckY + 16} ${BODY_CENTER_X + 10} ${landmarks.neckY + 2}`} stroke="var(--color-accent-700)" strokeWidth="1.2" />
-
-				{/* Bust Line */}
-				<path d={`M${BODY_CENTER_X - landmarks.bustHalfWidth - 4} ${landmarks.bustY} H${BODY_CENTER_X + landmarks.bustHalfWidth + 4}`} strokeDasharray="3 3" />
-				{/* Waist Line */}
-				<path d={`M${BODY_CENTER_X - landmarks.waistHalfWidth - 4} ${landmarks.waistY} H${BODY_CENTER_X + landmarks.waistHalfWidth + 4}`} strokeDasharray="3 3" />
-				{/* Hips Line */}
-				<path d={`M${BODY_CENTER_X - landmarks.hipHalfWidth - 4} ${landmarks.hipY} H${BODY_CENTER_X + landmarks.hipHalfWidth + 4}`} strokeDasharray="3 3" />
+			{/* Horizontal Double-Headed Measurement Arrows */}
+			<g stroke="var(--color-ink-900)" strokeWidth="1.4" strokeLinecap="round">
+				{/* BUST Arrow */}
+				<line x1={bustLeftX} y1={landmarks.bustY} x2={bustRightX} y2={landmarks.bustY} markerStart="url(#arrowLeft)" markerEnd="url(#arrowRight)" strokeDasharray="3 3" />
+				{/* WAIST Arrow */}
+				<line x1={waistLeftX} y1={landmarks.waistY} x2={waistRightX} y2={landmarks.waistY} markerStart="url(#arrowLeft)" markerEnd="url(#arrowRight)" strokeDasharray="3 3" />
+				{/* HIPS Arrow */}
+				<line x1={hipLeftX} y1={landmarks.hipY} x2={hipRightX} y2={landmarks.hipY} markerStart="url(#arrowLeft)" markerEnd="url(#arrowRight)" strokeDasharray="3 3" />
 			</g>
 
-			{garment?.map((hemline) => {
-				const hemlineY = landmarks.shoulderY + (hemline.lengthInches / bodyState.height) * (landmarks.floorY - landmarks.shoulderY);
-				if (hemlineY <= landmarks.shoulderY || hemlineY >= landmarks.floorY) {
-					return null;
-				}
+			{/* Horizontal Measurement Labels */}
+			<g textAnchor="middle" fontSize="9" fontWeight="800" fill="var(--color-ink-900)">
+				{/* BUST Label Badge */}
+				<rect x={BODY_CENTER_X - 20} y={landmarks.bustY - 7} width="40" height="14" rx="3" fill="var(--color-surface)" stroke="var(--color-ink-300)" strokeWidth="0.8" />
+				<text x={BODY_CENTER_X} y={landmarks.bustY + 3.5}>BUST</text>
 
-				return (
-					<g key={hemline.label}>
-						<line
-							x1={BODY_CENTER_X - landmarks.hipHalfWidth - 10}
-							y1={hemlineY}
-							x2={BODY_CENTER_X + landmarks.hipHalfWidth + 10}
-							y2={hemlineY}
-							stroke="var(--color-accent-800)"
-							strokeWidth="1.5"
-							strokeDasharray="4 4"
-						/>
-						<text x={BODY_CENTER_X + landmarks.hipHalfWidth + 13} y={hemlineY + 3.5} fontSize="9.5" fill="var(--color-accent-800)" fontWeight="700">
-							{hemline.label}
-						</text>
-					</g>
-				);
-			})}
+				{/* WAIST Label Badge */}
+				<rect x={BODY_CENTER_X - 22} y={landmarks.waistY - 7} width="44" height="14" rx="3" fill="var(--color-surface)" stroke="var(--color-ink-300)" strokeWidth="0.8" />
+				<text x={BODY_CENTER_X} y={landmarks.waistY + 3.5}>WAIST</text>
+
+				{/* HIPS Label Badge */}
+				<rect x={BODY_CENTER_X - 19} y={landmarks.hipY - 7} width="38" height="14" rx="3" fill="var(--color-surface)" stroke="var(--color-ink-300)" strokeWidth="0.8" />
+				<text x={BODY_CENTER_X} y={landmarks.hipY + 3.5}>HIPS</text>
+			</g>
+
+			{/* Vertical Kameez Length Arrow (Left Side) */}
+			<g stroke="var(--color-accent-700)" strokeWidth="1.3" strokeLinecap="round">
+				<line x1={kameezDimX} y1={landmarks.shoulderY} x2={kameezDimX} y2={kameezHemY} markerStart="url(#accentArrowUp)" markerEnd="url(#accentArrowDown)" strokeDasharray="3 3" />
+				<line x1={kameezDimX - 4} y1={landmarks.shoulderY} x2={BODY_CENTER_X - landmarks.shoulderHalfWidth} y2={landmarks.shoulderY} stroke="var(--color-accent-400)" strokeWidth="0.8" strokeDasharray="2 2" />
+				<line x1={kameezDimX - 4} y1={kameezHemY} x2={BODY_CENTER_X - landmarks.hipHalfWidth - 6} y2={kameezHemY} stroke="var(--color-accent-400)" strokeWidth="0.8" strokeDasharray="2 2" />
+				<text x={kameezDimX - 6} y={(landmarks.shoulderY + kameezHemY) / 2} writingMode="tb" textAnchor="middle" fontSize="8.5" fontWeight="700" fill="var(--color-accent-800)">
+					KAMEEZ L. ({kameezLengthInches}&quot;)
+				</text>
+			</g>
+
+			{/* Vertical Trouser Length Arrow (Right Side) */}
+			<g stroke="var(--color-accent-700)" strokeWidth="1.3" strokeLinecap="round">
+				<line x1={trouserDimX} y1={landmarks.hipY} x2={trouserDimX} y2={landmarks.ankleY} markerStart="url(#accentArrowUp)" markerEnd="url(#accentArrowDown)" strokeDasharray="3 3" />
+				<line x1={trouserDimX + 4} y1={landmarks.hipY} x2={BODY_CENTER_X + landmarks.hipHalfWidth} y2={landmarks.hipY} stroke="var(--color-accent-400)" strokeWidth="0.8" strokeDasharray="2 2" />
+				<line x1={trouserDimX + 4} y1={landmarks.ankleY} x2={BODY_CENTER_X + landmarks.ankleHalfWidth} y2={landmarks.ankleY} stroke="var(--color-accent-400)" strokeWidth="0.8" strokeDasharray="2 2" />
+				<text x={trouserDimX + 8} y={(landmarks.hipY + landmarks.ankleY) / 2} writingMode="tb" textAnchor="middle" fontSize="8.5" fontWeight="700" fill="var(--color-accent-800)">
+					TROUSER L. ({trouserLengthInches}&quot;)
+				</text>
+			</g>
 		</svg>
 	);
 }
