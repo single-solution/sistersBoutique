@@ -97,7 +97,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 
 			{isMounted && isOpen
 				? createPortal(
-						<div role="dialog" aria-modal="true" aria-label="Size and fit" className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-3 sm:p-4 overscroll-contain">
+						<div role="dialog" aria-modal="true" aria-label="Size and fit" className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-3 sm:p-5 overscroll-contain">
 							{/* Backdrop */}
 							<button
 								type="button"
@@ -106,20 +106,22 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 								className="absolute inset-0 bg-black/65 backdrop-blur-xs transition-opacity"
 							/>
 
-							{/* Tight Picture-Sized Modal Frame */}
-							<div className="relative flex w-full max-w-[420px] flex-col overflow-hidden rounded-3xl border border-[var(--color-ink-200)] bg-[var(--color-surface)] shadow-2xl animate-dialog-in">
+							{/* Spacious 2-Column Modal with Continuous Image Background (#f5f3f0) */}
+							<div className="relative flex h-[88vh] max-h-[640px] w-full max-w-[840px] flex-col overflow-hidden rounded-3xl border border-[#e5e1dc] bg-[#f5f3f0] shadow-2xl animate-dialog-in">
 								{/* ── Top Header with Title + IN/CM Toggle + Size Table + Close ── */}
-								<div className="flex shrink-0 items-center justify-between border-b border-[var(--color-ink-100)] bg-white/90 px-4 py-3 backdrop-blur-md z-30">
-									<h2 className="text-base font-bold text-[var(--color-ink-900)]">Size &amp; Fit</h2>
-
+								<div className="flex shrink-0 items-center justify-between border-b border-[#e5e1dc]/80 bg-[#f5f3f0]/90 px-5 py-3.5 backdrop-blur-md z-30">
 									<div className="flex items-center gap-2">
+										<h2 className="text-base font-bold text-[var(--color-ink-900)]">Size &amp; Fit Guidance</h2>
+									</div>
+
+									<div className="flex items-center gap-2.5">
 										{/* IN / CM Toggle in Header */}
-										<div className="flex overflow-hidden rounded-full border border-[var(--color-ink-200)] bg-[var(--color-ink-50)] p-0.5" aria-label="Unit toggle">
+										<div className="flex overflow-hidden rounded-full border border-[var(--color-ink-200)] bg-white/80 p-0.5 shadow-2xs" aria-label="Unit toggle">
 											<button
 												type="button"
 												onClick={() => setUnit("in")}
 												className={classNames(
-													"rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase transition-colors",
+													"rounded-full px-3 py-0.5 text-[10px] font-extrabold uppercase transition-colors",
 													unit === "in" ? "bg-[var(--color-ink-900)] text-white shadow-2xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]",
 												)}
 											>
@@ -129,7 +131,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 												type="button"
 												onClick={() => setUnit("cm")}
 												className={classNames(
-													"rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase transition-colors",
+													"rounded-full px-3 py-0.5 text-[10px] font-extrabold uppercase transition-colors",
 													unit === "cm" ? "bg-[var(--color-ink-900)] text-white shadow-2xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]",
 												)}
 											>
@@ -141,7 +143,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 											<button
 												type="button"
 												onClick={() => setIsTableOpen(true)}
-												className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-ink-200)] bg-[var(--color-ink-50)] px-3 py-1 text-xs font-semibold text-[var(--color-ink-800)] transition-colors hover:bg-[var(--color-ink-100)]"
+												className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-ink-200)] bg-white/80 px-3 py-1 text-xs font-semibold text-[var(--color-ink-800)] shadow-2xs transition-colors hover:bg-white"
 											>
 												<Table2 size={13} />
 												Size Table
@@ -151,65 +153,81 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 											type="button"
 											aria-label="Close"
 											onClick={() => setIsOpen(false)}
-											className="rounded-full p-1.5 text-[var(--color-ink-500)] transition-colors hover:bg-[var(--color-ink-100)] hover:text-[var(--color-ink-900)]"
+											className="rounded-full p-1.5 text-[var(--color-ink-500)] transition-colors hover:bg-white/80 hover:text-[var(--color-ink-900)]"
 										>
 											<X size={18} />
 										</button>
 									</div>
 								</div>
 
-								{/* ── Main Body: Picture Sized Aspect Ratio Container ── */}
-								<div className="relative w-full aspect-[3/4] overflow-hidden bg-[#f5f3f0]">
-									{/* Full-bleed model image */}
-									<FitPreview
-										measurements={{ bust: previewBust, waist: previewWaist, hip: previewHip }}
-										garment={hemlines}
-										angle={angle}
-										className="h-full w-full"
-									/>
-
-									{/* ── Floating Live Range Sliders (Rendered directly on image with slight opacity) ── */}
-									{chart && (
-										<div className="absolute top-3 left-3 z-20 pointer-events-auto">
-											<div className="w-[190px] sm:w-[210px] rounded-2xl border border-white/80 bg-white/75 p-3 shadow-lg backdrop-blur-md transition-all opacity-85 hover:opacity-100 focus-within:opacity-100">
-												<SizeFinder chart={chart} measurements={measurements} unit={unit} onChange={setMeasurements} />
+								{/* ── Main Body: 2-Column Seamless Layout ── */}
+								<div className="flex flex-col sm:flex-row flex-1 overflow-hidden bg-[#f5f3f0]">
+									{/* LEFT COLUMN: Fit Parameter Sliders, Suggested Size & Angle Controls */}
+									<div className="w-full sm:w-[48%] flex flex-col justify-between p-5 space-y-4 border-r border-[#e5e1dc]/60 bg-[#f5f3f0] overflow-y-auto">
+										{/* Top: Sliders Box */}
+										<div className="space-y-3">
+											<div>
+												<h3 className="text-xs font-extrabold uppercase tracking-wider text-[var(--color-ink-800)]">Fit Parameters</h3>
+												<p className="text-[11px] text-[var(--color-ink-500)]">Drag sliders to match your body measurements.</p>
 											</div>
+
+											{chart && (
+												<div className="rounded-2xl border border-white/80 bg-white/60 p-4 shadow-xs backdrop-blur-md">
+													<SizeFinder chart={chart} measurements={measurements} unit={unit} onChange={setMeasurements} />
+												</div>
+											)}
 										</div>
-									)}
 
-									{/* ── Bottom Overlay: Suggested Size & Image Angle Switcher (Centered) ── */}
-									<div className="absolute bottom-3 inset-x-0 z-20 flex flex-col items-center gap-2 pointer-events-auto">
-										{/* Informational Suggested Size Badge */}
-										{recommended && (
-											<div className="rounded-full border border-white/80 bg-white/95 px-4 py-1 text-xs font-extrabold text-[var(--color-ink-900)] shadow-md backdrop-blur-md">
-												Suggested Size: <span className="text-[var(--color-accent-700)]">{recommended.label}</span>
-											</div>
-										)}
+										{/* Bottom: Suggested Size & View Angle Switcher */}
+										<div className="space-y-3 pt-3 border-t border-[#e5e1dc]/80">
+											{/* Suggested Size Badge */}
+											{recommended && (
+												<div className="rounded-2xl border border-white/80 bg-white/80 p-3 shadow-xs backdrop-blur-md flex items-center justify-between">
+													<span className="text-xs font-bold uppercase tracking-wider text-[var(--color-ink-600)]">Suggested Size</span>
+													<span className="rounded-full bg-[var(--color-ink-900)] px-3 py-1 text-xs font-extrabold text-white">
+														{recommended.label}
+													</span>
+												</div>
+											)}
 
-										{/* Angle Switcher (Centered at bottom of image) */}
-										{availableAngles.length > 1 && (
-											<div className="flex items-center gap-1 rounded-full border border-white/80 bg-white/90 p-1 shadow-lg backdrop-blur-md" aria-label="View angle">
-												{availableAngles.map((a) => (
-													<button
-														key={a}
-														type="button"
-														onClick={() => setAngle(a)}
-														className={`rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider transition-all ${
-															a === angle ? "bg-[var(--color-ink-900)] text-white shadow-xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]"
-														}`}
-													>
-														{ANGLE_LABELS[a]}
-													</button>
-												))}
-											</div>
-										)}
+											{/* View Angle Switcher */}
+											{availableAngles.length > 1 && (
+												<div className="flex items-center justify-between">
+													<span className="text-xs font-bold uppercase tracking-wider text-[var(--color-ink-600)]">View Angle</span>
+													<div className="flex items-center gap-1 rounded-full border border-white/80 bg-white/80 p-1 shadow-2xs" aria-label="View angle">
+														{availableAngles.map((a) => (
+															<button
+																key={a}
+																type="button"
+																onClick={() => setAngle(a)}
+																className={`rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider transition-all ${
+																	a === angle ? "bg-[var(--color-ink-900)] text-white shadow-2xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]"
+																}`}
+															>
+																{ANGLE_LABELS[a]}
+															</button>
+														))}
+													</div>
+												</div>
+											)}
+										</div>
+									</div>
+
+									{/* RIGHT COLUMN: Full Model Image on Seamless Background */}
+									<div className="w-full sm:w-[52%] relative h-full flex items-center justify-center p-2 bg-[#f5f3f0]">
+										<FitPreview
+											measurements={{ bust: previewBust, waist: previewWaist, hip: previewHip }}
+											garment={hemlines}
+											angle={angle}
+											className="h-full w-full"
+										/>
 									</div>
 								</div>
 
 								{/* Sub-Modal: Size Table Modal Overlay */}
 								{isTableOpen && chart && (
 									<div className="absolute inset-0 z-40 flex flex-col bg-white animate-dialog-in">
-										<div className="flex items-center justify-between border-b border-[var(--color-ink-100)] px-4 py-3 bg-[var(--color-ink-50)]">
+										<div className="flex items-center justify-between border-b border-[var(--color-ink-100)] px-5 py-3.5 bg-[var(--color-ink-50)]">
 											<h3 className="text-sm font-bold text-[var(--color-ink-900)]">Detailed Size Chart</h3>
 											<button
 												type="button"
@@ -220,7 +238,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 												<X size={18} />
 											</button>
 										</div>
-										<div className="flex-1 overflow-y-auto p-4 space-y-4">
+										<div className="flex-1 overflow-y-auto p-5 space-y-4">
 											<SizeGuide chart={chart} selectedSizeValue={selectedSizeValue} />
 										</div>
 									</div>
