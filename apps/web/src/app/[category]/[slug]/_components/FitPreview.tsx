@@ -91,6 +91,8 @@ function BodyIllustration({ bodyState, garment }: BodyIllustrationProps) {
 	const torsoPath = buildTorsoPath(landmarks);
 	const leftArmPath = buildLeftArmPath(landmarks);
 	const leftLegPath = buildLeftLegPath(landmarks);
+	const kameezPath = buildKameezPath(landmarks);
+	const leftShalwarPath = buildLeftShalwarPath(landmarks);
 
 	return (
 		<svg
@@ -106,30 +108,48 @@ function BodyIllustration({ bodyState, garment }: BodyIllustrationProps) {
 					<stop offset="50%" stopColor="var(--color-canvas)" />
 					<stop offset="100%" stopColor="var(--color-canvas-deep)" />
 				</linearGradient>
+				<linearGradient id="kameezGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+					<stop offset="0%" stopColor="var(--color-accent-100)" stopOpacity="0.9" />
+					<stop offset="100%" stopColor="var(--color-accent-200)" stopOpacity="0.85" />
+				</linearGradient>
+				<linearGradient id="shalwarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+					<stop offset="0%" stopColor="var(--color-ink-100)" stopOpacity="0.85" />
+					<stop offset="100%" stopColor="var(--color-ink-200)" stopOpacity="0.9" />
+				</linearGradient>
 			</defs>
 
-			{/* Main Mannequin Body Silhouette */}
-			<g fill="url(#mannequinBodyGrad)" stroke="var(--color-ink-800)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+			{/* Underlying Mannequin Base */}
+			<g fill="url(#mannequinBodyGrad)" stroke="var(--color-ink-300)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
 				<path d={leftLegPath} />
 				<path d={leftLegPath} transform="translate(240 0) scale(-1 1)" />
-				<ellipse cx={BODY_CENTER_X} cy="32" rx="16" ry="22" />
+				<ellipse cx={BODY_CENTER_X} cy="32" rx="15" ry="21" />
 				<path d={torsoPath} />
 				<path d={leftArmPath} />
 				<path d={leftArmPath} transform="translate(240 0) scale(-1 1)" />
 			</g>
 
-			{/* Anatomical Contour Lines & Measurement Guidelines */}
-			<g fill="none" stroke="var(--color-ink-400)" strokeWidth="1" strokeLinecap="round" opacity="0.85">
-				<path d={`M120 10 V${landmarks.neckY + 2} M104 30 Q120 32 136 30`} />
-				<path d={`M${BODY_CENTER_X - landmarks.bustHalfWidth} ${landmarks.bustY} H${BODY_CENTER_X + landmarks.bustHalfWidth}`} strokeDasharray="3 3" />
-				<path d={`M${BODY_CENTER_X - landmarks.waistHalfWidth} ${landmarks.waistY} H${BODY_CENTER_X + landmarks.waistHalfWidth}`} strokeDasharray="3 3" />
-				<path
-					d={`M${BODY_CENTER_X - landmarks.hipHalfWidth} ${landmarks.hipY + 1} Q102 ${landmarks.hipY + 10} 120 ${landmarks.crotchY - 2} Q138 ${
-						landmarks.hipY + 10
-					} ${BODY_CENTER_X + landmarks.hipHalfWidth} ${landmarks.hipY + 1}`}
-					strokeDasharray="3 3"
-				/>
-				<circle cx="120" cy={landmarks.waistY + 6} r="1.2" fill="var(--color-ink-600)" stroke="none" />
+			{/* Shalwar / Trouser Outfit Layer */}
+			<g fill="url(#shalwarGrad)" stroke="var(--color-ink-600)" strokeWidth="1.2" strokeLinecap="round">
+				<path d={leftShalwarPath} />
+				<path d={leftShalwarPath} transform="translate(240 0) scale(-1 1)" />
+			</g>
+
+			{/* Kameez (Shirt/Tunic) Outfit Layer */}
+			<g fill="url(#kameezGrad)" stroke="var(--color-accent-700)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+				<path d={kameezPath} />
+			</g>
+
+			{/* Measurement Guidelines & Labels */}
+			<g fill="none" stroke="var(--color-ink-600)" strokeWidth="1" strokeLinecap="round" opacity="0.85">
+				{/* Neckline Accent */}
+				<path d={`M${BODY_CENTER_X - 10} ${landmarks.neckY + 2} Q${BODY_CENTER_X} ${landmarks.neckY + 16} ${BODY_CENTER_X + 10} ${landmarks.neckY + 2}`} stroke="var(--color-accent-700)" strokeWidth="1.2" />
+
+				{/* Bust Line */}
+				<path d={`M${BODY_CENTER_X - landmarks.bustHalfWidth - 4} ${landmarks.bustY} H${BODY_CENTER_X + landmarks.bustHalfWidth + 4}`} strokeDasharray="3 3" />
+				{/* Waist Line */}
+				<path d={`M${BODY_CENTER_X - landmarks.waistHalfWidth - 4} ${landmarks.waistY} H${BODY_CENTER_X + landmarks.waistHalfWidth + 4}`} strokeDasharray="3 3" />
+				{/* Hips Line */}
+				<path d={`M${BODY_CENTER_X - landmarks.hipHalfWidth - 4} ${landmarks.hipY} H${BODY_CENTER_X + landmarks.hipHalfWidth + 4}`} strokeDasharray="3 3" />
 			</g>
 
 			{garment?.map((hemline) => {
@@ -141,15 +161,15 @@ function BodyIllustration({ bodyState, garment }: BodyIllustrationProps) {
 				return (
 					<g key={hemline.label}>
 						<line
-							x1={BODY_CENTER_X - landmarks.hipHalfWidth - 8}
+							x1={BODY_CENTER_X - landmarks.hipHalfWidth - 10}
 							y1={hemlineY}
-							x2={BODY_CENTER_X + landmarks.hipHalfWidth + 8}
+							x2={BODY_CENTER_X + landmarks.hipHalfWidth + 10}
 							y2={hemlineY}
-							stroke="var(--color-accent-700)"
+							stroke="var(--color-accent-800)"
 							strokeWidth="1.5"
 							strokeDasharray="4 4"
 						/>
-						<text x={BODY_CENTER_X + landmarks.hipHalfWidth + 11} y={hemlineY + 3.5} fontSize="9.5" fill="var(--color-accent-800)" fontWeight="600">
+						<text x={BODY_CENTER_X + landmarks.hipHalfWidth + 13} y={hemlineY + 3.5} fontSize="9.5" fill="var(--color-accent-800)" fontWeight="700">
 							{hemline.label}
 						</text>
 					</g>
@@ -218,6 +238,45 @@ function buildLeftLegPath(landmarks: BodyLandmarks) {
 		C ${ankleX + 10} ${floorY - 3}, ${ankleX + 7} ${ankleY + 5}, ${ankleX + 4} ${ankleY}
 		C ${ankleX + 3} ${kneeY + 34}, ${kneeX + 5} ${kneeY + 5}, ${kneeX + 5} ${kneeY}
 		C ${kneeX + 4} ${kneeY - 28}, ${hipJointX + 5} ${crotchY + 14}, ${BODY_CENTER_X} ${crotchY}
+	`;
+}
+
+function buildKameezPath(landmarks: BodyLandmarks) {
+	const { neckY, shoulderY, bustY, waistY, hipY, kneeY, shoulderHalfWidth, bustHalfWidth, waistHalfWidth, hipHalfWidth } = landmarks;
+	const kameezHemY = kneeY - 10;
+	const kameezFlareHalfWidth = hipHalfWidth + 6;
+	const slitY = hipY + 12;
+
+	return `
+		M ${BODY_CENTER_X - 12} ${neckY + 2}
+		Q ${BODY_CENTER_X} ${neckY + 16} ${BODY_CENTER_X + 12} ${neckY + 2}
+		L ${BODY_CENTER_X + shoulderHalfWidth + 3} ${shoulderY + 2}
+		C ${BODY_CENTER_X + bustHalfWidth + 4} ${bustY - 4}, ${BODY_CENTER_X + waistHalfWidth + 3} ${waistY - 8}, ${BODY_CENTER_X + waistHalfWidth + 3} ${waistY}
+		C ${BODY_CENTER_X + waistHalfWidth + 3} ${waistY + 12}, ${BODY_CENTER_X + hipHalfWidth + 4} ${hipY - 4}, ${BODY_CENTER_X + kameezFlareHalfWidth} ${slitY}
+		L ${BODY_CENTER_X + kameezFlareHalfWidth} ${kameezHemY}
+		L ${BODY_CENTER_X - kameezFlareHalfWidth} ${kameezHemY}
+		L ${BODY_CENTER_X - kameezFlareHalfWidth} ${slitY}
+		C ${BODY_CENTER_X - hipHalfWidth - 4} ${hipY - 4}, ${BODY_CENTER_X - waistHalfWidth - 3} ${waistY + 12}, ${BODY_CENTER_X - waistHalfWidth - 3} ${waistY}
+		C ${BODY_CENTER_X - waistHalfWidth - 3} ${waistY - 8}, ${BODY_CENTER_X - bustHalfWidth - 4} ${bustY - 4}, ${BODY_CENTER_X - shoulderHalfWidth - 3} ${shoulderY + 2}
+		Z
+	`;
+}
+
+function buildLeftShalwarPath(landmarks: BodyLandmarks) {
+	const { crotchY, kneeY, ankleY, hipJointHalfWidth, kneeHalfWidth, ankleHalfWidth, thighHalfWidth } = landmarks;
+	const hipJointX = BODY_CENTER_X - hipJointHalfWidth;
+	const kneeX = BODY_CENTER_X - kneeHalfWidth;
+	const ankleX = BODY_CENTER_X - ankleHalfWidth;
+	const outerThighX = hipJointX - thighHalfWidth * 1.05;
+
+	return `
+		M ${BODY_CENTER_X - 2} ${crotchY + 8}
+		C ${outerThighX - 4} ${crotchY + 28}, ${kneeX - 8} ${kneeY - 12}, ${kneeX - 7} ${kneeY + 10}
+		C ${kneeX - 6} ${kneeY + 30}, ${ankleX - 5} ${ankleY - 16}, ${ankleX - 4} ${ankleY}
+		L ${ankleX + 6} ${ankleY}
+		C ${ankleX + 5} ${kneeY + 32}, ${kneeX + 6} ${kneeY + 8}, ${kneeX + 6} ${kneeY}
+		C ${kneeX + 5} ${kneeY - 24}, ${hipJointX + 6} ${crotchY + 16}, ${BODY_CENTER_X - 2} ${crotchY + 8}
+		Z
 	`;
 }
 
