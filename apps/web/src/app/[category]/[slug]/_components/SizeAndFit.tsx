@@ -135,7 +135,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 									</div>
 								</div>
 
-								{/* ── Main Canvas: Full Bleed Image with Overlay Controls ── */}
+								{/* ── Main Canvas: Edge-to-Edge Full Image ── */}
 								<div className="relative flex-1 overflow-hidden">
 									{/* Full-bleed model image with overlays */}
 									<FitPreview
@@ -147,8 +147,8 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 
 									{/* ── Floating Top Bar: Body Shape Pills + Sliders Toggle ── */}
 									{chart && (
-										<div className="absolute top-2 inset-x-2 z-20 flex flex-col items-center gap-2 pointer-events-auto">
-											<div className="flex items-center justify-between gap-1.5 rounded-full border border-white/80 bg-white/90 p-1 shadow-lg backdrop-blur-md">
+										<div className="absolute top-2 inset-x-2 z-20 flex items-center justify-between pointer-events-auto">
+											<div className="mx-auto flex items-center gap-1.5 rounded-full border border-white/80 bg-white/90 p-1 shadow-lg backdrop-blur-md">
 												<BodyShapeToggle measurements={measurements} onChange={setMeasurements} />
 												<button
 													type="button"
@@ -162,9 +162,19 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 												</button>
 											</div>
 
-											{/* Expandable Live Sliders Container */}
+											{/* Expandable Live Sliders Card (Anchored top-right popup) */}
 											{isCustomExpanded && (
-												<div className="w-full max-w-[340px] rounded-2xl border border-white/80 bg-white/95 p-3.5 shadow-xl backdrop-blur-md animate-dialog-in">
+												<div className="absolute top-11 right-2 z-30 w-[270px] rounded-2xl border border-white/90 bg-white/95 p-3.5 shadow-2xl backdrop-blur-md animate-dialog-in">
+													<div className="flex items-center justify-between pb-1 mb-2 border-b border-[var(--color-ink-100)]">
+														<span className="text-[11px] font-extrabold uppercase tracking-wider text-[var(--color-ink-900)]">Live Sliders</span>
+														<button
+															type="button"
+															onClick={() => setIsCustomExpanded(false)}
+															className="rounded-full p-0.5 text-[var(--color-ink-500)] hover:text-[var(--color-ink-900)]"
+														>
+															<X size={14} />
+														</button>
+													</div>
 													<SizeFinder chart={chart} measurements={measurements} onChange={setMeasurements} />
 												</div>
 											)}
@@ -173,26 +183,23 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 
 									{/* ── Bottom Overlay: Suggested Size & Image Angle Switcher (Centered) ── */}
 									<div className="absolute bottom-3 inset-x-0 z-20 flex flex-col items-center gap-2 pointer-events-auto">
-										{/* Suggested Size Badge (Positioned directly above the angle switcher) */}
+										{/* Suggested Size Pill: "✓ Size [L] Selected" or "Select Size [L]" */}
 										{recommended && (
-											<div className="flex items-center gap-2 rounded-full border border-white/80 bg-white/95 px-3 py-1 shadow-md backdrop-blur-md">
-												<span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-ink-600)]">
-													Suggested: <strong className="text-[var(--color-ink-900)]">{recommended.label}</strong>
-												</span>
-												<button
-													type="button"
-													onClick={() => onSelectSize(recommended.sizeValue)}
-													disabled={isRecommendedSelected}
-													className="rounded-full bg-[var(--color-ink-900)] px-2.5 py-0.5 text-[10px] font-extrabold text-white transition-all disabled:opacity-50 disabled:bg-[var(--color-accent-700)]"
-												>
-													{isRecommendedSelected ? (
-														<span className="inline-flex items-center gap-1">
-															<Check size={10} /> Selected
-														</span>
-													) : (
-														"Select Size"
-													)}
-												</button>
+											<div>
+												{isRecommendedSelected ? (
+													<div className="inline-flex items-center gap-1.5 rounded-full border border-white/80 bg-[var(--color-ink-900)] px-3.5 py-1 text-[11px] font-extrabold text-white shadow-md backdrop-blur-md">
+														<Check size={12} className="text-emerald-400" />
+														Size {recommended.label} Selected
+													</div>
+												) : (
+													<button
+														type="button"
+														onClick={() => onSelectSize(recommended.sizeValue)}
+														className="inline-flex items-center gap-1.5 rounded-full border border-white/90 bg-white/95 px-3.5 py-1 text-[11px] font-extrabold text-[var(--color-ink-900)] shadow-md backdrop-blur-md hover:bg-white hover:scale-105 transition-all"
+													>
+														Select Size {recommended.label}
+													</button>
+												)}
 											</div>
 										)}
 
