@@ -108,7 +108,7 @@ const nextConfig: NextConfig = {
 			dynamic: 30,
 			static: 60,
 		},
-		optimizePackageImports: ["lucide-react", "@store/shared"],
+		optimizePackageImports: ["lucide-react", "@store/shared", "@store/ui"],
 	},
 	// Treat the workspace packages as part of the build so Next.js compiles
 	// their TypeScript instead of expecting a published .js bundle.
@@ -121,9 +121,10 @@ const nextConfig: NextConfig = {
 	// worker.js'` followed by "the worker thread exited" in dev).
 	serverExternalPackages: ["pino", "pino-pretty", "thread-stream", "pino-abstract-transport", "sonic-boom", "mongoose", "bcryptjs"],
 	images: {
-		// Dev: load Blob URLs in the browser — skips `/_next/image` server fetch,
-		// which fails when local DNS cannot resolve `*.public.blob.vercel-storage.com`.
-		unoptimized: !isProduction,
+		// Variants are pre-sized WebP served straight from R2, so the runtime
+		// optimizer is unnecessary — disabling it avoids Vercel image-optimization
+		// usage and keeps CDN cache-hit ratio near 100%.
+		unoptimized: true,
 		formats: ["image/avif", "image/webp"],
 		qualities: [65, 70, 75, 80, 85],
 		remotePatterns: [
