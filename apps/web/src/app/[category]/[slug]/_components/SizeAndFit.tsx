@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { Ruler, Table2, X, SlidersHorizontal } from "lucide-react";
+import { Ruler, Table2, X } from "lucide-react";
 import { classNames, type SizeChart, type SizeChartRow } from "@store/shared";
 
 import { SizeGuide } from "./SizeGuide";
@@ -37,8 +37,8 @@ function garmentHemlines(chart: SizeChart, row: SizeChartRow | null): Array<{ la
 export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel, piecesLabel, className }: SizeAndFitProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isTableOpen, setIsTableOpen] = useState(false);
-	const [isCustomExpanded, setIsCustomExpanded] = useState(false);
 	const [angle, setAngle] = useState<ViewAngle>("front");
+	const [unit, setUnit] = useState<"in" | "cm">("in");
 	const [isMounted, setIsMounted] = useState(false);
 	const [measurements, setMeasurements] = useState<BodyMeasurements>(() => ({ ...DEFAULT_BODY_INPUT_MEASUREMENTS }));
 
@@ -107,12 +107,36 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 							/>
 
 							{/* Tight Picture-Sized Modal Frame */}
-							<div className="relative flex w-full max-w-[400px] flex-col overflow-hidden rounded-3xl border border-[var(--color-ink-200)] bg-[var(--color-surface)] shadow-2xl animate-dialog-in">
-								{/* ── Top Header ── */}
+							<div className="relative flex w-full max-w-[420px] flex-col overflow-hidden rounded-3xl border border-[var(--color-ink-200)] bg-[var(--color-surface)] shadow-2xl animate-dialog-in">
+								{/* ── Top Header with Title + IN/CM Toggle + Size Table + Close ── */}
 								<div className="flex shrink-0 items-center justify-between border-b border-[var(--color-ink-100)] bg-white/90 px-4 py-3 backdrop-blur-md z-30">
 									<h2 className="text-base font-bold text-[var(--color-ink-900)]">Size &amp; Fit</h2>
 
 									<div className="flex items-center gap-2">
+										{/* IN / CM Toggle in Header */}
+										<div className="flex overflow-hidden rounded-full border border-[var(--color-ink-200)] bg-[var(--color-ink-50)] p-0.5" aria-label="Unit toggle">
+											<button
+												type="button"
+												onClick={() => setUnit("in")}
+												className={classNames(
+													"rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase transition-colors",
+													unit === "in" ? "bg-[var(--color-ink-900)] text-white shadow-2xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]",
+												)}
+											>
+												IN
+											</button>
+											<button
+												type="button"
+												onClick={() => setUnit("cm")}
+												className={classNames(
+													"rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase transition-colors",
+													unit === "cm" ? "bg-[var(--color-ink-900)] text-white shadow-2xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]",
+												)}
+											>
+												CM
+											</button>
+										</div>
+
 										{chart && (
 											<button
 												type="button"
@@ -144,43 +168,18 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 										className="h-full w-full"
 									/>
 
-									{/* ── Floating Top-Right: Adjust Sliders Button & Popover ── */}
+									{/* ── Floating Live Range Sliders (Rendered directly on image with slight opacity) ── */}
 									{chart && (
-										<div className="absolute top-3 right-3 z-20 pointer-events-auto">
-											<button
-												type="button"
-												title="Adjust measurement sliders"
-												onClick={() => setIsCustomExpanded(!isCustomExpanded)}
-												className={`flex items-center gap-1.5 rounded-full border border-white/80 px-3 py-1 text-xs font-bold shadow-lg backdrop-blur-md transition-all ${
-													isCustomExpanded ? "bg-[var(--color-ink-900)] text-white" : "bg-white/90 text-[var(--color-ink-800)] hover:bg-white"
-												}`}
-											>
-												<SlidersHorizontal size={13} />
-												Adjust Fit
-											</button>
-
-											{/* Expandable Live Sliders Card */}
-											{isCustomExpanded && (
-												<div className="absolute top-10 right-0 z-30 w-[270px] rounded-2xl border border-white/90 bg-white/95 p-3.5 shadow-2xl backdrop-blur-md animate-dialog-in">
-													<div className="flex items-center justify-between pb-1 mb-2 border-b border-[var(--color-ink-100)]">
-														<span className="text-[11px] font-extrabold uppercase tracking-wider text-[var(--color-ink-900)]">Adjust Measurements</span>
-														<button
-															type="button"
-															onClick={() => setIsCustomExpanded(false)}
-															className="rounded-full p-0.5 text-[var(--color-ink-500)] hover:text-[var(--color-ink-900)]"
-														>
-															<X size={14} />
-														</button>
-													</div>
-													<SizeFinder chart={chart} measurements={measurements} onChange={setMeasurements} />
-												</div>
-											)}
+										<div className="absolute top-3 left-3 z-20 pointer-events-auto">
+											<div className="w-[190px] sm:w-[210px] rounded-2xl border border-white/80 bg-white/75 p-3 shadow-lg backdrop-blur-md transition-all opacity-85 hover:opacity-100 focus-within:opacity-100">
+												<SizeFinder chart={chart} measurements={measurements} unit={unit} onChange={setMeasurements} />
+											</div>
 										</div>
 									)}
 
 									{/* ── Bottom Overlay: Suggested Size & Image Angle Switcher (Centered) ── */}
 									<div className="absolute bottom-3 inset-x-0 z-20 flex flex-col items-center gap-2 pointer-events-auto">
-										{/* Informational Suggested Size Badge (Purely guidance, no selection button) */}
+										{/* Informational Suggested Size Badge */}
 										{recommended && (
 											<div className="rounded-full border border-white/80 bg-white/95 px-4 py-1 text-xs font-extrabold text-[var(--color-ink-900)] shadow-md backdrop-blur-md">
 												Suggested Size: <span className="text-[var(--color-accent-700)]">{recommended.label}</span>
