@@ -581,11 +581,13 @@
 
 .lookFullFrame {
 	position: relative;
-	width: min(92vw, 48rem);
+	width: min(96vw, 64rem);
+	height: min(92vh, 56rem);
+	max-height: 92vh;
 	aspect-ratio: 3 / 4;
 	overflow: hidden;
 	border-radius: clamp(1rem, 2.5vw, 1.75rem);
-	box-shadow: 0 32px 80px color-mix(in srgb, var(--color-ink-900) 35%, transparent);
+	box-shadow: 0 32px 80px color-mix(in srgb, var(--color-ink-900) 45%, transparent);
 	cursor: default;
 }
 

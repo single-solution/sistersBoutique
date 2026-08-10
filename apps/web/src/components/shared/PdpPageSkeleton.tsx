@@ -72,10 +72,6 @@ export function PdpPageSkeleton() {
 						</span>
 					</span>
 				</span>
-				<div className={styles.ribbonNav} aria-hidden>
-					<span className={`${styles.ribbonNavButton} ${styles.ribbonNavPrev}`} />
-					<span className={`${styles.ribbonNavButton} ${styles.ribbonNavNext}`} />
-				</div>
 			</div>
 
 			<div className="mx-auto mt-10 w-[min(36rem,100%)] space-y-3 px-4">
