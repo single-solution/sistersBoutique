@@ -1,0 +1,158 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+
+import { scheduleStateUpdate } from "@/lib/scheduleStateUpdate";
+import { type Product, type StoredImage } from "@store/shared";
+import { ProductImage } from "@/components/shared/ProductImage";
+import { useAttributesForCategory } from "@/lib/core/storefrontReferenceContext";
+
+import { OVERLAY_CHIP_ROW_MAX_PX, TITLE_CHIP_ROW_MAX_PX, flattenChipGroups, getAttributeChipGroups, type ProductCardMediaSlide } from "./productCardChipModel";
+import { GroupedAttributeChipRow } from "./productCardChipRow";
+import { ProductDealAvailableBadge } from "./ProductDealAvailableBadge";
+
+const SLIDE_CYCLE_MS = 2000;
+
+/** Attribute chip slides per variant — ProductCard no longer cycles these, but helpers remain for optional surfaces. */
+export function buildProductCardVariantSlides(catalog: Product, variants: Product["variants"], attributes: ReturnType<typeof useAttributesForCategory>): ProductCardMediaSlide[] {
+	return variants.map((variant) => {
+		const scoped: Product = { ...catalog, variants: [variant] };
+		return {
+			slideKey: variant.id,
+			titleChipGroups: getAttributeChipGroups(scoped, attributes, "title-chips"),
+			overlayChipGroups: getAttributeChipGroups(scoped, attributes, "image-overlay"),
+		};
+	});
+}
+
+export function ProductCardMediaCycle({
+	slides,
+	activeIndex,
+	name,
+	brandName,
+	brandSlug,
+	heroImage,
+	priority = false,
+	offerCount = 0,
+}: {
+	slides: ProductCardMediaSlide[];
+	activeIndex: number;
+	name: string;
+	brandName: string;
+	brandSlug: string;
+	/** Single product gallery hero shown beneath the cycling overlays. */
+	heroImage?: StoredImage;
+	/** Preload the hero — used for above-the-fold cards. */
+	priority?: boolean;
+	/** Product-level deal hint — not tied to the cycling variant slide. */
+	offerCount?: number;
+}) {
+	const activeSlide = slides[activeIndex] ?? slides[0];
+
+	return (
+		<>
+			<div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.04]">
+				<ProductImage image={heroImage} variant="card" name={name} brandName={brandName} brandSlug={brandSlug} priority={priority} />
+			</div>
+
+			{offerCount > 0 ? (
+				<div className="absolute left-1.5 top-1.5 z-10 md:left-3 md:top-3">
+					<ProductDealAvailableBadge offerCount={offerCount} />
+				</div>
+			) : null}
+
+			{slides.some((slide) => slide.overlayChipGroups.length > 0) ? (
+				<div className="card-fade-stack absolute bottom-1.5 left-1.5 z-10 max-w-[calc(100%-12px)] md:bottom-3 md:left-3">
+					{slides.map((slide, index) =>
+						slide.overlayChipGroups.length > 0 ? (
+							<div key={slide.slideKey} className={`card-fade-stack__layer ${index === activeIndex ? "card-fade-stack__layer--active" : ""}`} aria-hidden={index !== activeIndex}>
+								<GroupedAttributeChipRow groups={slide.overlayChipGroups} maxHeightPx={OVERLAY_CHIP_ROW_MAX_PX} variant="overlay" />
+							</div>
+						) : null,
+					)}
+				</div>
+			) : null}
+
+			<span className="sr-only" aria-live="polite">
+				{activeSlide
+					? flattenChipGroups(activeSlide.titleChipGroups)
+							.map((chip) => chip.label)
+							.join(", ")
+					: null}
+			</span>
+		</>
+	);
+}
+
+export function ProductCardTitleChipCycle({ slides, activeIndex }: { slides: ProductCardMediaSlide[]; activeIndex: number }) {
+	return (
+		<div className="card-fade-stack h-full w-full">
+			{slides.map((slide, index) => (
+				<div key={slide.slideKey} className={`card-fade-stack__layer ${index === activeIndex ? "card-fade-stack__layer--active" : ""}`} aria-hidden={index !== activeIndex}>
+					<GroupedAttributeChipRow groups={slide.titleChipGroups} maxHeightPx={TITLE_CHIP_ROW_MAX_PX} />
+				</div>
+			))}
+		</div>
+	);
+}
+
+export function useSlideCycle(slideCount: number, cycleKey: string, enabled: boolean) {
+	const prefersReducedMotion = usePrefersReducedMotion();
+	const [index, setIndex] = useState(0);
+	const [paused, setPaused] = useState(false);
+	const staggerMs = useMemo(() => hashCycleOffset(cycleKey, SLIDE_CYCLE_MS), [cycleKey]);
+	const shouldAnimate = enabled && !prefersReducedMotion && slideCount > 1 && !paused;
+
+	useEffect(() => {
+		scheduleStateUpdate(() => {
+			setIndex(0);
+		});
+	}, [slideCount, cycleKey]);
+
+	useEffect(() => {
+		if (!shouldAnimate) {
+			return;
+		}
+
+		let intervalId: ReturnType<typeof setInterval> | undefined;
+		const timeoutId = setTimeout(() => {
+			intervalId = setInterval(() => {
+				setIndex((current) => (current + 1) % slideCount);
+			}, SLIDE_CYCLE_MS);
+		}, staggerMs);
+
+		return () => {
+			clearTimeout(timeoutId);
+			if (intervalId) {
+				clearInterval(intervalId);
+			}
+		};
+	}, [shouldAnimate, slideCount, staggerMs]);
+
+	return {
+		activeIndex: prefersReducedMotion ? 0 : index,
+		setPaused,
+	};
+}
+
+function hashCycleOffset(seed: string, modulo: number): number {
+	let hash = 0;
+	for (let index = 0; index < seed.length; index += 1) {
+		hash = (hash + seed.charCodeAt(index) * (index + 1)) % modulo;
+	}
+	return hash;
+}
+
+function usePrefersReducedMotion(): boolean {
+	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+	useEffect(() => {
+		const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+		const sync = () => setPrefersReducedMotion(media.matches);
+		sync();
+		media.addEventListener("change", sync);
+		return () => media.removeEventListener("change", sync);
+	}, []);
+
+	return prefersReducedMotion;
+}

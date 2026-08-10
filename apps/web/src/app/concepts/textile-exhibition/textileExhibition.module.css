@@ -1,0 +1,556 @@
+.exhibition {
+	--textile-canvas: #f2eadc;
+	--textile-paper: #fbf6ec;
+	--textile-clay: #a24834;
+	--textile-saffron: #b47622;
+	--textile-ink: #2d221d;
+	--textile-muted: #76675d;
+	--textile-line: #d7c5ae;
+	--color-canvas: var(--textile-canvas);
+	--color-canvas-deep: #eadfce;
+	--color-surface: var(--textile-paper);
+	--color-surface-muted: #eadfce;
+	--color-ink-50: var(--textile-paper);
+	--color-ink-100: color-mix(in srgb, var(--textile-ink) 8%, var(--textile-paper));
+	--color-ink-200: var(--textile-line);
+	--color-ink-300: color-mix(in srgb, var(--textile-ink) 28%, var(--textile-paper));
+	--color-ink-400: color-mix(in srgb, var(--textile-ink) 48%, var(--textile-paper));
+	--color-ink-500: var(--textile-muted);
+	--color-ink-600: color-mix(in srgb, var(--textile-ink) 72%, var(--textile-paper));
+	--color-ink-700: color-mix(in srgb, var(--textile-ink) 86%, var(--textile-paper));
+	--color-ink-800: var(--textile-ink);
+	--color-ink-900: var(--textile-ink);
+	--color-accent-50: var(--textile-paper);
+	--color-accent-100: color-mix(in srgb, var(--textile-clay) 10%, var(--textile-paper));
+	--color-accent-200: color-mix(in srgb, var(--textile-clay) 22%, var(--textile-paper));
+	--color-accent-300: color-mix(in srgb, var(--textile-clay) 40%, var(--textile-paper));
+	--color-accent-400: color-mix(in srgb, var(--textile-clay) 65%, var(--textile-paper));
+	--color-accent-500: var(--textile-clay);
+	--color-accent-600: var(--textile-clay);
+	--color-accent-700: var(--textile-clay);
+	--color-accent-800: color-mix(in srgb, var(--textile-clay) 82%, var(--textile-ink));
+	--color-accent-900: color-mix(in srgb, var(--textile-clay) 68%, var(--textile-ink));
+	--color-accent-deep: var(--textile-clay);
+	overflow: clip;
+	background: radial-gradient(circle at 82% 12%, rgb(180 118 34 / 0.12), transparent 22rem), var(--textile-canvas);
+	color: var(--textile-ink);
+	font-family: var(--font-headline), serif;
+}
+
+.coverImage,
+.heroImage {
+	object-fit: cover;
+}
+
+.wordmark,
+.hero h1,
+.categories h2,
+.specimen h3,
+.craftHeading h2,
+.craftSpecimen h3,
+.products h2,
+.service h2,
+.contact h2 {
+	font-family: var(--font-display), cursive;
+	font-style: normal;
+	font-synthesis: none;
+	font-weight: 400;
+	letter-spacing: 0;
+}
+
+.archiveLabel,
+.specimenIndex,
+.accessionNumber {
+	color: var(--textile-clay);
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+.hero {
+	position: relative;
+	display: flex;
+	min-height: 100dvh;
+	align-items: flex-end;
+	overflow: hidden;
+	padding: clamp(8rem, 14vw, 11rem) clamp(1rem, 5vw, 5rem) clamp(3rem, 7vw, 6rem);
+}
+
+.heroImage {
+	object-position: center;
+}
+
+.heroShade {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, rgb(28 18 14 / 0.78), rgb(28 18 14 / 0.08) 74%), linear-gradient(180deg, rgb(28 18 14 / 0.08), rgb(28 18 14 / 0.56));
+}
+
+.heroCopy {
+	position: relative;
+	z-index: 1;
+	max-width: 52rem;
+	padding: clamp(1.5rem, 4vw, 3.5rem);
+	border-radius: clamp(1.5rem, 3vw, 3rem);
+	background: color-mix(in srgb, var(--textile-paper) 91%, transparent);
+	box-shadow: 0 2rem 7rem rgb(42 25 18 / 0.26);
+	backdrop-filter: blur(18px);
+}
+
+.wordmark {
+	margin: 1.15rem 0 0;
+	color: var(--textile-clay);
+	font-size: clamp(2.6rem, 4.2vw, 4.6rem);
+	line-height: 0.9;
+}
+
+.hero h1 {
+	max-width: 8ch;
+	margin: 1.25rem 0 0;
+	font-size: clamp(5rem, 11vw, 10rem);
+	line-height: 0.76;
+}
+
+.heroCopy > p:nth-of-type(3) {
+	max-width: 35rem;
+	margin: 1.75rem 0 0;
+	color: var(--textile-muted);
+	font-size: 1.05rem;
+	line-height: 1.7;
+}
+
+.action {
+	display: inline-flex;
+	min-height: 3rem;
+	align-items: center;
+	gap: 0.6rem;
+	margin-top: 2rem;
+	padding: 0.75rem 1.1rem;
+	border-radius: 0.75rem;
+	background: var(--textile-clay);
+	color: var(--textile-paper);
+	font-size: 0.88rem;
+	font-weight: 700;
+	transition:
+		transform 220ms ease,
+		background-color 220ms ease;
+}
+
+.action:hover {
+	transform: translateY(-2px);
+	background: color-mix(in srgb, var(--textile-clay) 86%, black);
+}
+
+.heroIndex {
+	position: absolute;
+	z-index: 1;
+	top: clamp(7rem, 12vw, 9rem);
+	right: clamp(1rem, 5vw, 5rem);
+	display: none;
+	gap: 2rem;
+	color: white;
+	font-size: 0.67rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+.categories,
+.products {
+	width: min(100%, 92rem);
+	margin-inline: auto;
+	padding: clamp(6rem, 11vw, 11rem) clamp(1rem, 4vw, 4rem);
+}
+
+.categories > header,
+.products > header {
+	display: grid;
+	max-width: 74rem;
+	gap: 1.2rem;
+}
+
+.categories h2,
+.craftHeading h2,
+.products h2,
+.contact h2 {
+	margin: 0;
+	font-size: clamp(4rem, 8vw, 8rem);
+	line-height: 0.82;
+	text-wrap: balance;
+}
+
+.categories > header > p:last-child,
+.craftHeading > p,
+.serviceCopy > p:not(.archiveLabel) {
+	max-width: 35rem;
+	margin: 0;
+	color: var(--textile-muted);
+	font-size: 1.05rem;
+	line-height: 1.7;
+}
+
+.specimens {
+	display: grid;
+	margin-top: clamp(4rem, 8vw, 8rem);
+	gap: 4rem;
+}
+
+.specimenLink {
+	display: block;
+	color: inherit;
+}
+
+.specimen {
+	display: grid;
+}
+
+.specimenIndex {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-bottom: 0.8rem;
+}
+
+.specimen figure {
+	position: relative;
+	min-height: 34rem;
+	overflow: hidden;
+	border-radius: clamp(1.25rem, 3vw, 2.75rem);
+	background: var(--color-surface-muted);
+}
+
+.specimen h3 {
+	margin: 1.5rem 0 0;
+	font-size: clamp(3.2rem, 5vw, 5.2rem);
+	line-height: 0.86;
+}
+
+.specimen p {
+	max-width: 28rem;
+	margin: 1rem 0 0;
+	color: var(--textile-muted);
+	line-height: 1.65;
+}
+
+.craft {
+	position: relative;
+	overflow: hidden;
+	background: var(--textile-paper);
+}
+
+.craftHeading {
+	display: grid;
+	width: min(100%, 88rem);
+	margin-inline: auto;
+	padding: clamp(5rem, 8vw, 8rem) clamp(1rem, 4vw, 4rem) 2rem;
+	gap: 1.5rem;
+}
+
+.craftTrack {
+	display: grid;
+	padding: 2rem 1rem clamp(6rem, 10vw, 10rem);
+	gap: 4rem;
+}
+
+.craftSpecimen {
+	display: grid;
+	overflow: hidden;
+	border-radius: clamp(1.5rem, 3vw, 3rem);
+	background: var(--textile-canvas);
+	box-shadow: 0 1.5rem 5rem rgb(80 48 32 / 0.1);
+}
+
+.craftSpecimen figure {
+	position: relative;
+	min-height: 34rem;
+	overflow: hidden;
+}
+
+.craftSpecimen > div {
+	padding: clamp(2rem, 5vw, 4rem);
+}
+
+.craftSpecimen span {
+	color: var(--textile-saffron);
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+.craftSpecimen h3 {
+	max-width: 10ch;
+	margin: 1rem 0 0;
+	font-size: clamp(3.2rem, 6vw, 6.2rem);
+	line-height: 0.84;
+}
+
+.craftSpecimen p {
+	max-width: 31rem;
+	margin: 1.5rem 0 0;
+	color: var(--textile-muted);
+	font-size: 1rem;
+	line-height: 1.7;
+}
+
+.products > header {
+	grid-template-columns: 1fr;
+}
+
+.products > header a {
+	display: inline-flex;
+	min-height: 2.75rem;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--textile-clay);
+	font-size: 0.86rem;
+	font-weight: 700;
+}
+
+.productGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	margin-top: clamp(3rem, 6vw, 5rem);
+	gap: clamp(1rem, 2vw, 2rem);
+}
+
+.productGrid > div {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.accessionNumber {
+	padding-left: 0.25rem;
+}
+
+.emptyCollection {
+	margin-top: 3rem;
+	color: var(--textile-muted);
+}
+
+.service {
+	position: relative;
+	min-height: 92dvh;
+	margin: clamp(6rem, 10vw, 10rem) clamp(0.75rem, 2vw, 2rem);
+	overflow: hidden;
+	border-radius: clamp(1.75rem, 4vw, 4rem);
+}
+
+.service::after {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, rgb(31 21 18 / 0.72), rgb(31 21 18 / 0.08));
+	content: "";
+	pointer-events: none;
+}
+
+.service figure {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+}
+
+.serviceCopy {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	min-height: 92dvh;
+	align-items: flex-start;
+	flex-direction: column;
+	justify-content: center;
+	width: min(100%, 48rem);
+	padding: clamp(2rem, 8vw, 8rem);
+}
+
+.serviceCopy .archiveLabel {
+	color: #f0b46c;
+}
+
+.service h2 {
+	max-width: 9ch;
+	margin: 1.25rem 0 0;
+	color: white;
+	font-size: clamp(4rem, 8vw, 8rem);
+	line-height: 0.8;
+}
+
+.serviceCopy > p:not(.archiveLabel) {
+	margin-top: 1.8rem;
+	color: rgb(255 255 255 / 0.78);
+}
+
+.service .action {
+	background: var(--textile-paper);
+	color: var(--textile-clay);
+}
+
+.contact {
+	display: grid;
+	width: min(calc(100% - 2rem), 88rem);
+	margin: clamp(7rem, 12vw, 12rem) auto 0;
+	overflow: hidden;
+	border-radius: clamp(1.75rem, 4vw, 4rem);
+	background: var(--textile-paper);
+}
+
+.contactImage {
+	position: relative;
+	min-height: 36rem;
+	overflow: hidden;
+}
+
+.contactCopy {
+	display: flex;
+	align-items: flex-start;
+	flex-direction: column;
+	justify-content: center;
+	padding: clamp(2.5rem, 7vw, 6rem);
+}
+
+.contact h2 {
+	margin-top: 1.25rem;
+}
+
+.contactCopy > a,
+.contactCopy > p,
+.contactActions a {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.7rem;
+	color: var(--textile-muted);
+	font-size: 0.9rem;
+	line-height: 1.5;
+}
+
+.contactCopy > a {
+	margin-top: 2rem;
+}
+
+.contactCopy > p {
+	margin: 0.85rem 0 0;
+}
+
+.contactActions {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 2rem;
+	gap: 0.75rem 1.25rem;
+}
+
+.contactActions a {
+	min-height: 2.75rem;
+	align-items: center;
+	color: var(--textile-clay);
+	font-weight: 700;
+}
+
+@media (min-width: 900px) {
+	.heroIndex {
+		display: flex;
+	}
+
+	.categories > header {
+		grid-template-columns: minmax(0, 1.4fr) minmax(20rem, 0.6fr);
+		align-items: end;
+	}
+
+	.categories > header .archiveLabel {
+		grid-column: 1 / -1;
+	}
+
+	.specimens {
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.78fr) minmax(0, 0.92fr);
+		align-items: start;
+		gap: clamp(1.5rem, 3vw, 3.5rem);
+	}
+
+	.specimenLink:nth-child(2),
+	.specimens > .specimen:nth-child(2) {
+		margin-top: 9rem;
+	}
+
+	.specimenLink:nth-child(3),
+	.specimens > .specimen:nth-child(3) {
+		margin-top: 3rem;
+	}
+
+	.specimen figure {
+		min-height: 46rem;
+	}
+
+	.specimenLink:nth-child(2) figure,
+	.specimens > .specimen:nth-child(2) figure {
+		min-height: 36rem;
+	}
+
+	.craft {
+		height: 100dvh;
+	}
+
+	.craftHeading {
+		grid-template-columns: minmax(0, 1.3fr) minmax(20rem, 0.7fr);
+		align-items: end;
+		height: 34dvh;
+		padding-top: 6rem;
+		padding-bottom: 2rem;
+	}
+
+	.craftTrack {
+		display: flex;
+		width: max-content;
+		height: 66dvh;
+		padding: 1rem 6vw 4rem;
+		gap: 3vw;
+	}
+
+	.craftSpecimen {
+		grid-template-columns: minmax(0, 1.15fr) minmax(22rem, 0.85fr);
+		width: 76vw;
+		height: 100%;
+		flex: 0 0 auto;
+	}
+
+	.craftSpecimen figure {
+		min-height: 0;
+	}
+
+	.products > header {
+		grid-template-columns: 1fr auto;
+		align-items: end;
+	}
+
+	.productGrid {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+
+	.productGrid > :nth-child(1),
+	.productGrid > :nth-child(3) {
+		margin-top: 3.5rem;
+	}
+
+	.contact {
+		grid-template-columns: minmax(0, 1.15fr) minmax(28rem, 0.85fr);
+	}
+
+	.contactImage {
+		min-height: 52rem;
+	}
+}
+
+@media (max-width: 640px) {
+	.heroCopy {
+		padding: 1.5rem;
+	}
+
+	.hero h1 {
+		font-size: clamp(4.6rem, 24vw, 7rem);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.action {
+		transform: none;
+		transition: none;
+	}
+}

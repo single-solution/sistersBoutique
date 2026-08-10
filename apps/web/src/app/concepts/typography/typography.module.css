@@ -1,0 +1,161 @@
+.page {
+	min-height: 100dvh;
+	padding: clamp(2rem, 5vw, 5rem);
+	background: var(--color-canvas);
+	color: var(--color-ink-900);
+}
+
+.introduction {
+	width: min(100%, 86rem);
+	margin-inline: auto;
+}
+
+.introduction > p,
+.metadata > span,
+.kicker,
+.secondarySample > p {
+	color: var(--color-accent-deep);
+	font-family: var(--font-bodoni), serif;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+}
+
+.introduction h1 {
+	max-width: 15ch;
+	margin-top: 1rem;
+	font-family: var(--font-display), cursive;
+	font-size: clamp(3rem, 6vw, 6rem);
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: 0;
+	text-wrap: balance;
+}
+
+.introduction > span {
+	display: block;
+	max-width: 62ch;
+	margin-top: 1.5rem;
+	color: var(--color-ink-500);
+	font-family: var(--font-bodoni), serif;
+	line-height: 1.7;
+}
+
+.studies {
+	display: grid;
+	width: min(100%, 86rem);
+	margin: clamp(3.5rem, 8vw, 7rem) auto 0;
+	gap: 1rem;
+}
+
+.study {
+	display: grid;
+	grid-template-columns: minmax(14rem, 0.34fr) minmax(0, 1fr);
+	overflow: hidden;
+	border-radius: var(--radius-2xl);
+	background: var(--color-surface);
+	box-shadow: var(--shadow-sm);
+}
+
+.metadata {
+	padding: clamp(1.5rem, 3vw, 2.75rem);
+	background: var(--color-surface-muted);
+}
+
+.metadata strong {
+	display: block;
+	margin-top: 1rem;
+	font-family: var(--font-bodoni), serif;
+	font-size: 1rem;
+}
+
+.metadata p {
+	max-width: 30ch;
+	margin-top: 0.75rem;
+	color: var(--color-ink-500);
+	font-family: var(--font-bodoni), serif;
+	font-size: 0.82rem;
+	line-height: 1.6;
+}
+
+.sample {
+	min-height: 34rem;
+	padding: clamp(2rem, 6vw, 5rem);
+}
+
+.sample h2 {
+	max-width: 10ch;
+	margin-top: 1.25rem;
+	font-size: clamp(3.5rem, 7vw, 7.5rem);
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: 0;
+	text-wrap: balance;
+}
+
+.body {
+	max-width: 54ch;
+	margin-top: 1.75rem;
+	color: var(--color-ink-500);
+	font-size: 1rem;
+	line-height: 1.7;
+}
+
+.secondarySample {
+	margin-top: clamp(3rem, 7vw, 6rem);
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--color-ink-100);
+}
+
+.secondarySample h3 {
+	max-width: 14ch;
+	margin-top: 0.8rem;
+	font-size: clamp(2.3rem, 4vw, 4.8rem);
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: 0;
+}
+
+.allura {
+	font-family: var(--font-study-allura), cursive;
+}
+
+.monteCarlo {
+	font-family: var(--font-study-monte-carlo), cursive;
+}
+
+.pinyon {
+	font-family: var(--font-study-pinyon), cursive;
+}
+
+.alexBrush {
+	font-family: var(--font-study-alex-brush), cursive;
+}
+
+.parisienne {
+	font-family: var(--font-study-parisienne), cursive;
+}
+
+.tangerine {
+	font-family: var(--font-study-tangerine), cursive;
+	font-weight: 700;
+}
+
+.bodoni {
+	font-family: var(--font-bodoni), serif;
+}
+
+@media (max-width: 760px) {
+	.study {
+		grid-template-columns: 1fr;
+	}
+
+	.sample {
+		min-height: 30rem;
+	}
+
+	.sample h2 {
+		font-size: clamp(3.2rem, 16vw, 5.3rem);
+	}
+}

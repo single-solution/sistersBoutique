@@ -1,0 +1,562 @@
+.gallery {
+	--gallery-canvas: #f4efe6;
+	--gallery-paper: #fbf8f2;
+	--gallery-paper-muted: #ebe3d7;
+	--gallery-ink: #241c1c;
+	--gallery-ink-muted: #6f625d;
+	--gallery-accent: #7b2448;
+	--gallery-line: #d8ccbd;
+	--color-canvas: var(--gallery-canvas);
+	--color-canvas-deep: var(--gallery-paper-muted);
+	--color-surface: var(--gallery-paper);
+	--color-surface-muted: var(--gallery-paper-muted);
+	--color-ink-50: var(--gallery-paper);
+	--color-ink-100: color-mix(in srgb, var(--gallery-ink) 8%, var(--gallery-paper));
+	--color-ink-200: var(--gallery-line);
+	--color-ink-300: color-mix(in srgb, var(--gallery-ink) 28%, var(--gallery-paper));
+	--color-ink-400: color-mix(in srgb, var(--gallery-ink) 48%, var(--gallery-paper));
+	--color-ink-500: var(--gallery-ink-muted);
+	--color-ink-600: color-mix(in srgb, var(--gallery-ink) 72%, var(--gallery-paper));
+	--color-ink-700: color-mix(in srgb, var(--gallery-ink) 86%, var(--gallery-paper));
+	--color-ink-800: var(--gallery-ink);
+	--color-ink-900: var(--gallery-ink);
+	--color-accent-50: var(--gallery-paper);
+	--color-accent-100: color-mix(in srgb, var(--gallery-accent) 10%, var(--gallery-paper));
+	--color-accent-200: color-mix(in srgb, var(--gallery-accent) 22%, var(--gallery-paper));
+	--color-accent-300: color-mix(in srgb, var(--gallery-accent) 40%, var(--gallery-paper));
+	--color-accent-400: color-mix(in srgb, var(--gallery-accent) 65%, var(--gallery-paper));
+	--color-accent-500: var(--gallery-accent);
+	--color-accent-600: var(--gallery-accent);
+	--color-accent-700: var(--gallery-accent);
+	--color-accent-800: color-mix(in srgb, var(--gallery-accent) 82%, var(--gallery-ink));
+	--color-accent-900: color-mix(in srgb, var(--gallery-accent) 68%, var(--gallery-ink));
+	--color-accent-deep: var(--gallery-accent);
+	overflow: clip;
+	background: var(--gallery-canvas);
+	color: var(--gallery-ink);
+	font-family: var(--font-headline), serif;
+}
+
+.coverImage {
+	object-fit: cover;
+}
+
+.wordmark,
+.hero h1,
+.sectionIntroduction h2,
+.craftHeading h2,
+.craftChapter h3,
+.productsHeading h2,
+.service h2,
+.contactCard h2 {
+	font-family: var(--font-display), cursive;
+	font-style: normal;
+	font-synthesis: none;
+	font-weight: 400;
+	letter-spacing: 0;
+}
+
+.exhibitionLabel {
+	margin: 0;
+	color: var(--gallery-accent);
+	font-size: 0.72rem;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+.hero {
+	position: relative;
+	display: grid;
+	min-height: 100dvh;
+	grid-template-rows: auto minmax(32rem, 62dvh);
+	gap: 3rem;
+	padding: clamp(8rem, 14vw, 11rem) clamp(1rem, 5vw, 5rem) 3rem;
+}
+
+.heroCopy {
+	z-index: 2;
+	max-width: 46rem;
+}
+
+.wordmark {
+	margin: 1.5rem 0 0;
+	color: var(--gallery-accent);
+	font-size: clamp(2.5rem, 4.5vw, 4.8rem);
+	line-height: 0.9;
+}
+
+.hero h1 {
+	max-width: 11ch;
+	margin: 1.5rem 0 0;
+	font-size: clamp(4.25rem, 10vw, 9.8rem);
+	line-height: 0.78;
+	text-wrap: balance;
+}
+
+.heroIntroduction {
+	max-width: 34rem;
+	margin: 2rem 0 0;
+	color: var(--gallery-ink-muted);
+	font-size: clamp(1rem, 1.35vw, 1.24rem);
+	line-height: 1.7;
+}
+
+.action {
+	display: inline-flex;
+	min-height: 3rem;
+	align-items: center;
+	justify-content: center;
+	gap: 0.65rem;
+	margin-top: 2rem;
+	padding: 0.75rem 1.1rem;
+	border-radius: 0.85rem;
+	background: var(--gallery-accent);
+	color: var(--gallery-paper);
+	font-size: 0.88rem;
+	font-weight: 600;
+	transition:
+		transform 220ms ease,
+		background-color 220ms ease;
+}
+
+.action:hover {
+	transform: translateY(-2px);
+	background: color-mix(in srgb, var(--gallery-accent) 88%, black);
+}
+
+.action:active {
+	transform: translateY(0);
+}
+
+.heroPortrait {
+	position: relative;
+	min-height: 32rem;
+	overflow: hidden;
+	border-radius: clamp(1.5rem, 4vw, 4rem);
+	background: var(--gallery-paper-muted);
+}
+
+.heroPortrait::after {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, transparent 58%, rgb(25 17 16 / 0.46));
+	content: "";
+	pointer-events: none;
+}
+
+.heroPortrait figcaption {
+	position: absolute;
+	z-index: 1;
+	right: 1.25rem;
+	bottom: 1.25rem;
+	left: 1.25rem;
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	color: white;
+	font-size: 0.68rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.scrollNote {
+	display: none;
+}
+
+.collection,
+.craft,
+.products {
+	width: min(100%, 90rem);
+	margin-inline: auto;
+	padding: clamp(6rem, 11vw, 11rem) clamp(1rem, 4vw, 4rem);
+}
+
+.sectionIntroduction,
+.craftHeading {
+	display: grid;
+	max-width: 64rem;
+	grid-template-columns: 1fr;
+	gap: 1.25rem;
+}
+
+.sectionIntroduction h2,
+.craftHeading h2,
+.productsHeading h2 {
+	margin: 0;
+	font-size: clamp(3.7rem, 7vw, 7rem);
+	line-height: 0.86;
+	text-wrap: balance;
+}
+
+.sectionIntroduction > p:last-child {
+	max-width: 31rem;
+	margin: 0;
+	color: var(--gallery-ink-muted);
+	font-size: 1.05rem;
+	line-height: 1.7;
+}
+
+.categoryRooms {
+	display: grid;
+	margin-top: clamp(4rem, 8vw, 8rem);
+	gap: clamp(5rem, 9vw, 10rem);
+}
+
+.categoryLink {
+	display: block;
+	color: inherit;
+}
+
+.categoryRoom {
+	display: grid;
+	gap: 1.5rem;
+}
+
+.categoryRoom figure {
+	position: relative;
+	min-height: 32rem;
+	overflow: hidden;
+	border-radius: clamp(1.5rem, 3vw, 3rem);
+	background: var(--gallery-paper-muted);
+}
+
+.categoryRoom > div {
+	max-width: 25rem;
+}
+
+.categoryRoom span,
+.craftChapter span {
+	color: var(--gallery-accent);
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.16em;
+}
+
+.categoryRoom h3 {
+	margin: 0.75rem 0 0;
+	font-family: var(--font-display), cursive;
+	font-size: clamp(2.9rem, 5vw, 5rem);
+	font-style: normal;
+	font-synthesis: none;
+	font-weight: 400;
+	line-height: 0.9;
+}
+
+.categoryRoom p,
+.craftChapter p {
+	margin: 1rem 0 0;
+	color: var(--gallery-ink-muted);
+	line-height: 1.65;
+}
+
+.categoryRoom small {
+	display: block;
+	margin-top: 1.25rem;
+	color: var(--gallery-accent);
+	font-size: 0.78rem;
+	font-weight: 600;
+}
+
+.craft {
+	width: 100%;
+	max-width: none;
+	background: var(--gallery-paper);
+}
+
+.craftHeading,
+.craftSequence {
+	width: min(100%, 86rem);
+	margin-inline: auto;
+}
+
+.craftSequence {
+	display: grid;
+	margin-top: clamp(4rem, 8vw, 8rem);
+	gap: clamp(5rem, 9vw, 10rem);
+}
+
+.craftChapter {
+	display: grid;
+	gap: 1.75rem;
+}
+
+.craftChapter figure {
+	position: relative;
+	min-height: 35rem;
+	overflow: hidden;
+	border-radius: clamp(1.5rem, 3vw, 3rem);
+	background: var(--gallery-paper-muted);
+}
+
+.craftChapter > div {
+	max-width: 30rem;
+}
+
+.craftChapter h3 {
+	margin: 0.8rem 0 0;
+	font-size: clamp(3rem, 5vw, 5.5rem);
+	line-height: 0.88;
+}
+
+.productsHeading {
+	display: flex;
+	align-items: end;
+	justify-content: space-between;
+	gap: 2rem;
+}
+
+.productsHeading > a {
+	display: inline-flex;
+	min-height: 2.75rem;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--gallery-accent);
+	font-size: 0.85rem;
+	font-weight: 600;
+}
+
+.productGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	margin-top: clamp(3rem, 6vw, 5rem);
+	gap: clamp(1rem, 2vw, 1.75rem);
+}
+
+.emptyCollection {
+	margin-top: 3rem;
+	color: var(--gallery-ink-muted);
+}
+
+.service {
+	display: grid;
+	width: min(calc(100% - 2rem), 86rem);
+	margin: clamp(6rem, 11vw, 11rem) auto;
+	overflow: hidden;
+	border-radius: clamp(1.75rem, 4vw, 4rem);
+	background: var(--gallery-paper-muted);
+}
+
+.service figure {
+	position: relative;
+	min-height: 34rem;
+	overflow: hidden;
+}
+
+.service > div {
+	display: flex;
+	align-items: flex-start;
+	flex-direction: column;
+	justify-content: center;
+	padding: clamp(2.5rem, 7vw, 6rem);
+}
+
+.service h2 {
+	max-width: 11ch;
+	margin: 1.25rem 0 0;
+	font-size: clamp(3.4rem, 6vw, 6.2rem);
+	line-height: 0.88;
+}
+
+.service > div > p:not(.exhibitionLabel) {
+	max-width: 34rem;
+	margin: 1.75rem 0 0;
+	color: var(--gallery-ink-muted);
+	font-size: 1.05rem;
+	line-height: 1.7;
+}
+
+.contact {
+	position: relative;
+	min-height: min(78rem, 92dvh);
+	margin: clamp(7rem, 12vw, 12rem) clamp(0.75rem, 2vw, 2rem) 0;
+	overflow: hidden;
+	border-radius: clamp(1.75rem, 4vw, 4rem);
+}
+
+.contact::after {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgb(30 20 19 / 0.03), rgb(30 20 19 / 0.46));
+	content: "";
+	pointer-events: none;
+}
+
+.contactCard {
+	position: absolute;
+	z-index: 1;
+	right: clamp(1rem, 5vw, 5rem);
+	bottom: clamp(1rem, 5vw, 5rem);
+	width: min(calc(100% - 2rem), 34rem);
+	padding: clamp(1.75rem, 4vw, 3.5rem);
+	border-radius: clamp(1.25rem, 3vw, 2.5rem);
+	background: color-mix(in srgb, var(--gallery-paper) 92%, transparent);
+	box-shadow: 0 1.5rem 5rem rgb(44 28 24 / 0.18);
+	backdrop-filter: blur(18px);
+}
+
+.contactCard h2 {
+	margin: 1.15rem 0 1.75rem;
+	font-size: clamp(3rem, 5vw, 5rem);
+	line-height: 0.88;
+}
+
+.contactCard > a,
+.contactCard > p,
+.contactActions a {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	color: var(--gallery-ink-muted);
+	font-size: 0.9rem;
+	line-height: 1.5;
+}
+
+.contactCard > p {
+	margin: 0.8rem 0 0;
+}
+
+.contactActions {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 2rem;
+	gap: 0.75rem 1.25rem;
+}
+
+.contactActions a {
+	min-height: 2.75rem;
+	align-items: center;
+	color: var(--gallery-accent);
+	font-weight: 600;
+}
+
+@media (min-width: 900px) {
+	.hero {
+		grid-template-columns: minmax(20rem, 0.78fr) minmax(0, 1.22fr);
+		grid-template-rows: 1fr;
+		align-items: center;
+		gap: clamp(3rem, 6vw, 7rem);
+	}
+
+	.heroPortrait {
+		height: calc(100dvh - 8rem);
+		min-height: 42rem;
+	}
+
+	.scrollNote {
+		position: absolute;
+		bottom: 3rem;
+		left: clamp(1rem, 5vw, 5rem);
+		display: block;
+		color: var(--gallery-ink-muted);
+		font-size: 0.66rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		writing-mode: vertical-rl;
+	}
+
+	.sectionIntroduction {
+		grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
+		align-items: end;
+	}
+
+	.sectionIntroduction .exhibitionLabel {
+		grid-column: 1 / -1;
+	}
+
+	.categoryRoom {
+		grid-template-columns: minmax(0, 1.25fr) minmax(17rem, 0.75fr);
+		align-items: end;
+		gap: clamp(2rem, 5vw, 6rem);
+	}
+
+	.categoryLink:nth-child(even) .categoryRoom,
+	.categoryRooms > .categoryRoom:nth-child(even) {
+		grid-template-columns: minmax(17rem, 0.75fr) minmax(0, 1.25fr);
+	}
+
+	.categoryLink:nth-child(even) .categoryRoom figure,
+	.categoryRooms > .categoryRoom:nth-child(even) figure {
+		grid-column: 2;
+	}
+
+	.categoryLink:nth-child(even) .categoryRoom > div,
+	.categoryRooms > .categoryRoom:nth-child(even) > div {
+		grid-row: 1;
+		grid-column: 1;
+	}
+
+	.categoryRoom figure {
+		min-height: 50rem;
+	}
+
+	.craftChapter {
+		grid-template-columns: minmax(0, 1.3fr) minmax(18rem, 0.7fr);
+		align-items: center;
+		gap: clamp(3rem, 7vw, 8rem);
+	}
+
+	.craftChapter:nth-child(even) {
+		grid-template-columns: minmax(18rem, 0.7fr) minmax(0, 1.3fr);
+	}
+
+	.craftChapter:nth-child(even) figure {
+		grid-column: 2;
+	}
+
+	.craftChapter:nth-child(even) > div {
+		grid-row: 1;
+		grid-column: 1;
+	}
+
+	.craftChapter figure {
+		min-height: 48rem;
+	}
+
+	.productGrid {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+
+	.productGrid > :nth-child(2),
+	.productGrid > :nth-child(4) {
+		transform: translateY(3rem);
+	}
+
+	.service {
+		grid-template-columns: minmax(0, 1.1fr) minmax(26rem, 0.9fr);
+	}
+
+	.service figure {
+		min-height: 52rem;
+	}
+}
+
+@media (max-width: 640px) {
+	.heroPortrait figcaption {
+		flex-direction: column;
+	}
+
+	.productsHeading {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.contact {
+		min-height: 48rem;
+	}
+
+	.contactCard {
+		right: 0.75rem;
+		bottom: 0.75rem;
+		left: 0.75rem;
+		width: auto;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.action,
+	.productGrid > * {
+		transform: none;
+		transition: none;
+	}
+}
