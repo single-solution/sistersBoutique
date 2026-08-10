@@ -239,12 +239,6 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 		const slides = Array.from(track.querySelectorAll<HTMLElement>(`.${styles.ribbonSlide}`));
 		const activeIndex = 0;
 
-		/* Flush layout before % transforms — first client nav can paint before
-		   slide width is settled; baked force3D pixels then look like a corner rise. */
-		slides.forEach((slide) => {
-			void slide.offsetWidth;
-		});
-
 		if (reducedMotion.current) {
 			layoutRibbon(activeIndex, false);
 			return;
@@ -406,7 +400,6 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 			/* Hide + park on this layout frame so soft-nav never paints top-left-at-center. */
 			const slides = Array.from(track.querySelectorAll<HTMLElement>(`.${styles.ribbonSlide}`));
 			slides.forEach((slide) => {
-				void slide.offsetWidth;
 				gsap.set(slide, {
 					xPercent: -50,
 					yPercent: -50,

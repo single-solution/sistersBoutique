@@ -468,7 +468,16 @@
 
 .ribbonSlide:not([data-active="true"]) .ribbonFrame {
 	box-shadow: 0 16px 36px color-mix(in srgb, var(--color-ink-900) 10%, transparent);
-	filter: saturate(0.82) brightness(0.94);
+}
+
+.ribbonSlide:not([data-active="true"]) .ribbonFrame::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	background: rgba(0, 0, 0, 0.12);
+	transition: opacity 280ms ease;
+	pointer-events: none;
 }
 
 .ribbonParallax {
