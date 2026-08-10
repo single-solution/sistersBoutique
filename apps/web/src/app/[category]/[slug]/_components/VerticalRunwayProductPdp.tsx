@@ -237,7 +237,7 @@ export function VerticalRunwayProductPdp({
 			<PdpStudyProductTitle name={product.name} />
 			{looks.length > 0 ? <PdpStudyLookStage looks={looks} /> : null}
 			{product.descriptionHtml ? <PdpStudyCommerce eyebrow="The details" descriptionHtml={product.descriptionHtml} /> : null}
-			{garmentType === "unstitched" && sizeAndFit ? <div className={styles.studyShellPad}>{sizeAndFit}</div> : null}
+			{sizeAndFit ? <div className={styles.studyShellPad}>{sizeAndFit}</div> : null}
 			{relatedItems.length > 0 ? (
 				<PdpStudyMoreFrom brandName={brandName} brandHref={brandFilterHref} items={relatedItems} emptyMessage="" />
 			) : null}

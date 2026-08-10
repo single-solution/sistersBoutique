@@ -121,8 +121,8 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 										<UnstitchedFitNotes fabricLabel={fabricLabel} piecesLabel={piecesLabel} />
 									) : chart ? (
 										<>
-											<div className="flex flex-row items-start gap-4 md:gap-6">
-												<div className="flex-1 min-w-0">
+											<div className="flex flex-col-reverse sm:flex-row items-center sm:items-start gap-4 md:gap-6">
+												<div className="w-full flex-1 min-w-0">
 													<SizeFinder
 														chart={chart}
 														measurements={measurements}
@@ -132,7 +132,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, onSelectSize
 														isRecommendedSelected={recommended != null && recommended.sizeValue === selectedSizeValue}
 													/>
 												</div>
-												<div className="w-2/5 min-w-36 max-w-56 shrink-0">
+												<div className="w-full sm:w-2/5 min-w-36 max-w-48 sm:max-w-56 shrink-0">
 													<FitPreview measurements={previewMeasurements} garment={hemlines} />
 												</div>
 											</div>
