@@ -34,7 +34,7 @@ export function SignIn() {
 		<div className={`storefront-page-center ${STOREFRONT_SHELL_CLASS} w-full`}>
 			<div className="w-full max-w-md">
 				<div className="reveal text-center">
-					<p className="text-sm font-medium text-[var(--color-accent-deep)]">Your boutique account</p>
+					<p className="text-sm font-medium text-[var(--color-accent-deep)]">Your Sister's Outfits account</p>
 					<h1 className="font-display mt-4 text-5xl font-normal leading-none tracking-normal text-[var(--color-ink-900)]">
 						{mode === "signin" ? `Sign in to ${siteName}` : "Become a member"}
 					</h1>

@@ -69,7 +69,7 @@ export function SiteUrlsSettings({ draft, saved, setField, onSaved, canUpdate, e
 					type="url"
 					value={draft.publicSiteUrl}
 					onChange={(event) => setField("publicSiteUrl", event.target.value)}
-					placeholder="https://www.sistersoutfits.pk"
+					placeholder="https://www.sistersoutfits.com"
 					inputMode="url"
 					autoComplete="url"
 					hint="Include https:// — no trailing slash. Example: https://shop.example.com"
