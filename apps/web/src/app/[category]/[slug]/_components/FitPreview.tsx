@@ -46,27 +46,27 @@ interface BodyLandmarks {
 const BASE_BUST_INCHES = DEFAULT_BODY_MEASUREMENTS.bust;
 const BASE_HEIGHT_INCHES = DEFAULT_BODY_MEASUREMENTS.height;
 const BODY_CENTER_X = 120;
-const BODY_CANVAS_BOTTOM_MARGIN = 2;
+const BODY_CANVAS_BOTTOM_MARGIN = 6;
 const MEASUREMENT_ANIMATION_MS = 280;
 const HEIGHT_RESPONSE_RANGE_INCHES = 20;
-const MAX_HEIGHT_SCALE_CHANGE = 0.12;
-const SVG_UNITS_PER_BODY_INCH = 4.75;
-const SVG_VERTICAL_UNITS_PER_INCH = 8.05;
-const SVG_ARM_UNITS_PER_INCH = 8.25;
-const UNDERARM_INSET = 8;
-const UNDERARM_DROP = 28;
+const MAX_HEIGHT_SCALE_CHANGE = 0.08;
+const SVG_UNITS_PER_BODY_INCH = 3.85;
+const SVG_VERTICAL_UNITS_PER_INCH = 4.85;
+const SVG_ARM_UNITS_PER_INCH = 4.95;
+const UNDERARM_INSET = 6;
+const UNDERARM_DROP = 22;
 const BODY_DEPTH_RATIOS = {
-	bust: 0.72,
-	waist: 0.68,
-	hip: 0.78,
-	thigh: 0.82,
-	upperArm: 0.85,
+	bust: 0.70,
+	waist: 0.64,
+	hip: 0.74,
+	thigh: 0.78,
+	upperArm: 0.80,
 } as const;
 const BASE_VERTICAL_LANDMARKS = {
-	neckY: 78,
-	shoulderY: 110,
-	bustY: 158,
-	waistY: 207,
+	neckY: 56,
+	shoulderY: 78,
+	bustY: 114,
+	waistY: 152,
 } as const;
 
 export function FitPreview({ measurements, garment }: FitPreviewProps) {
@@ -74,7 +74,7 @@ export function FitPreview({ measurements, garment }: FitPreviewProps) {
 
 	return (
 		<figure className="flex flex-col items-center">
-			<div className="aspect-[3/4] w-full overflow-hidden bg-[var(--color-canvas)]">
+			<div className="aspect-[3/4] w-full overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-ink-100)] bg-gradient-to-b from-[var(--color-surface)] via-[var(--color-canvas)] to-[var(--color-canvas-deep)] p-2 shadow-inner">
 				<BodyIllustration bodyState={animatedBodyState} garment={garment} />
 			</div>
 		</figure>
@@ -94,49 +94,44 @@ function BodyIllustration({ bodyState, garment }: BodyIllustrationProps) {
 
 	return (
 		<svg
-			viewBox={`35 0 170 ${landmarks.floorY + BODY_CANVAS_BOTTOM_MARGIN}`}
-			className="h-full w-full"
+			viewBox={`20 0 200 ${landmarks.floorY + BODY_CANVAS_BOTTOM_MARGIN}`}
+			className="h-full w-full drop-shadow-sm"
 			preserveAspectRatio="xMidYMid meet"
 			role="img"
 			aria-label="Body-shape preview"
 		>
-			<g fill="var(--color-canvas)" stroke="var(--color-ink-900)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+			<defs>
+				<linearGradient id="mannequinBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+					<stop offset="0%" stopColor="var(--color-surface)" />
+					<stop offset="50%" stopColor="var(--color-canvas)" />
+					<stop offset="100%" stopColor="var(--color-canvas-deep)" />
+				</linearGradient>
+			</defs>
+
+			{/* Main Mannequin Body Silhouette */}
+			<g fill="url(#mannequinBodyGrad)" stroke="var(--color-ink-800)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
 				<path d={leftLegPath} />
 				<path d={leftLegPath} transform="translate(240 0) scale(-1 1)" />
-				<ellipse cx={BODY_CENTER_X} cy="46" rx="22" ry="32" />
+				<ellipse cx={BODY_CENTER_X} cy="32" rx="16" ry="22" />
 				<path d={torsoPath} />
 				<path d={leftArmPath} />
 				<path d={leftArmPath} transform="translate(240 0) scale(-1 1)" />
 			</g>
-			<g fill="none" stroke="var(--color-ink-700)" strokeWidth="1.1" strokeLinecap="round">
-				<path d={`M120 16 V${landmarks.neckY + 4} M99 43 Q120 46 141 43`} />
-				<path d={`M${BODY_CENTER_X - landmarks.bustHalfWidth} ${landmarks.bustY} H${BODY_CENTER_X + landmarks.bustHalfWidth}`} />
-				<path d={`M${BODY_CENTER_X - landmarks.waistHalfWidth} ${landmarks.waistY} H${BODY_CENTER_X + landmarks.waistHalfWidth}`} />
+
+			{/* Anatomical Contour Lines & Measurement Guidelines */}
+			<g fill="none" stroke="var(--color-ink-400)" strokeWidth="1" strokeLinecap="round" opacity="0.85">
+				<path d={`M120 10 V${landmarks.neckY + 2} M104 30 Q120 32 136 30`} />
+				<path d={`M${BODY_CENTER_X - landmarks.bustHalfWidth} ${landmarks.bustY} H${BODY_CENTER_X + landmarks.bustHalfWidth}`} strokeDasharray="3 3" />
+				<path d={`M${BODY_CENTER_X - landmarks.waistHalfWidth} ${landmarks.waistY} H${BODY_CENTER_X + landmarks.waistHalfWidth}`} strokeDasharray="3 3" />
 				<path
-					d={`M${BODY_CENTER_X - landmarks.hipHalfWidth} ${landmarks.hipY + 1} Q98 ${landmarks.hipY + 14} 120 ${landmarks.crotchY - 2} Q142 ${
-						landmarks.hipY + 14
+					d={`M${BODY_CENTER_X - landmarks.hipHalfWidth} ${landmarks.hipY + 1} Q102 ${landmarks.hipY + 10} 120 ${landmarks.crotchY - 2} Q138 ${
+						landmarks.hipY + 10
 					} ${BODY_CENTER_X + landmarks.hipHalfWidth} ${landmarks.hipY + 1}`}
+					strokeDasharray="3 3"
 				/>
-				<circle cx="120" cy={landmarks.waistY + 8} r="1.3" fill="var(--color-ink-700)" stroke="none" />
-				<path
-					d={`M${BODY_CENTER_X - landmarks.kneeHalfWidth - 4} ${landmarks.kneeY} Q${BODY_CENTER_X - landmarks.kneeHalfWidth} ${
-						landmarks.kneeY - 3
-					} ${BODY_CENTER_X - landmarks.kneeHalfWidth + 4} ${landmarks.kneeY} M${BODY_CENTER_X + landmarks.kneeHalfWidth - 4} ${
-						landmarks.kneeY
-					} Q${BODY_CENTER_X + landmarks.kneeHalfWidth} ${landmarks.kneeY - 3} ${BODY_CENTER_X + landmarks.kneeHalfWidth + 4} ${landmarks.kneeY}`}
-				/>
-				<path
-					d={`M${landmarks.leftWristX - 1} ${landmarks.wristY + 9} Q${landmarks.leftWristX - 2} ${landmarks.wristY + 18} ${
-						landmarks.leftWristX
-					} ${landmarks.wristY + 25} M${landmarks.leftWristX + 3} ${landmarks.wristY + 12} L${landmarks.leftWristX + 5} ${landmarks.wristY + 24}`}
-				/>
-				<path
-					d={`M${landmarks.leftWristX - 1} ${landmarks.wristY + 9} Q${landmarks.leftWristX - 2} ${landmarks.wristY + 18} ${
-						landmarks.leftWristX
-					} ${landmarks.wristY + 25} M${landmarks.leftWristX + 3} ${landmarks.wristY + 12} L${landmarks.leftWristX + 5} ${landmarks.wristY + 24}`}
-					transform="translate(240 0) scale(-1 1)"
-				/>
+				<circle cx="120" cy={landmarks.waistY + 6} r="1.2" fill="var(--color-ink-600)" stroke="none" />
 			</g>
+
 			{garment?.map((hemline) => {
 				const hemlineY = landmarks.shoulderY + (hemline.lengthInches / bodyState.height) * (landmarks.floorY - landmarks.shoulderY);
 				if (hemlineY <= landmarks.shoulderY || hemlineY >= landmarks.floorY) {
@@ -146,15 +141,15 @@ function BodyIllustration({ bodyState, garment }: BodyIllustrationProps) {
 				return (
 					<g key={hemline.label}>
 						<line
-							x1={BODY_CENTER_X - landmarks.hipHalfWidth - 10}
+							x1={BODY_CENTER_X - landmarks.hipHalfWidth - 8}
 							y1={hemlineY}
-							x2={BODY_CENTER_X + landmarks.hipHalfWidth + 10}
+							x2={BODY_CENTER_X + landmarks.hipHalfWidth + 8}
 							y2={hemlineY}
 							stroke="var(--color-accent-700)"
 							strokeWidth="1.5"
 							strokeDasharray="4 4"
 						/>
-						<text x={BODY_CENTER_X + landmarks.hipHalfWidth + 13} y={hemlineY + 4} fontSize="10" fill="var(--color-accent-800)" fontWeight="600">
+						<text x={BODY_CENTER_X + landmarks.hipHalfWidth + 11} y={hemlineY + 3.5} fontSize="9.5" fill="var(--color-accent-800)" fontWeight="600">
 							{hemline.label}
 						</text>
 					</g>
@@ -166,43 +161,43 @@ function BodyIllustration({ bodyState, garment }: BodyIllustrationProps) {
 
 function buildTorsoPath(landmarks: BodyLandmarks) {
 	const { neckY, shoulderY, bustY, waistY, hipY, shoulderHalfWidth, bustHalfWidth, waistHalfWidth, hipHalfWidth, upperArmHalfWidth } = landmarks;
-	const shoulderJoinHalfWidth = shoulderHalfWidth + upperArmHalfWidth;
+	const shoulderJoinHalfWidth = shoulderHalfWidth + upperArmHalfWidth * 0.7;
 
 	return `
-		M ${BODY_CENTER_X - hipHalfWidth} ${hipY + 4}
-		C ${BODY_CENTER_X - hipHalfWidth} ${hipY - 16}, ${BODY_CENTER_X - waistHalfWidth} ${waistY + 23}, ${BODY_CENTER_X - waistHalfWidth} ${waistY}
-		C ${BODY_CENTER_X - waistHalfWidth} ${waistY - 22}, ${BODY_CENTER_X - bustHalfWidth} ${bustY + 26}, ${BODY_CENTER_X - bustHalfWidth} ${bustY + 4}
-		C ${BODY_CENTER_X - bustHalfWidth} ${bustY - 10}, ${BODY_CENTER_X - bustHalfWidth - 2} ${bustY - 22}, ${BODY_CENTER_X - shoulderHalfWidth + UNDERARM_INSET} ${shoulderY + UNDERARM_DROP}
-		C ${BODY_CENTER_X - shoulderHalfWidth + 2} ${shoulderY + 16}, ${BODY_CENTER_X - shoulderHalfWidth - 2} ${shoulderY + 8}, ${BODY_CENTER_X - shoulderJoinHalfWidth} ${shoulderY + 4}
-		C ${BODY_CENTER_X - 19} ${shoulderY - 10}, ${BODY_CENTER_X - 14} ${neckY + 16}, ${BODY_CENTER_X - 13} ${neckY}
-		L ${BODY_CENTER_X + 13} ${neckY}
-		C ${BODY_CENTER_X + 14} ${neckY + 16}, ${BODY_CENTER_X + 19} ${shoulderY - 10}, ${BODY_CENTER_X + shoulderJoinHalfWidth} ${shoulderY + 4}
-		C ${BODY_CENTER_X + shoulderHalfWidth + 2} ${shoulderY + 8}, ${BODY_CENTER_X + shoulderHalfWidth - 2} ${shoulderY + 16}, ${BODY_CENTER_X + shoulderHalfWidth - UNDERARM_INSET} ${shoulderY + UNDERARM_DROP}
-		C ${BODY_CENTER_X + bustHalfWidth + 2} ${bustY - 22}, ${BODY_CENTER_X + bustHalfWidth} ${bustY - 10}, ${BODY_CENTER_X + bustHalfWidth} ${bustY + 4}
-		C ${BODY_CENTER_X + bustHalfWidth} ${bustY + 26}, ${BODY_CENTER_X + waistHalfWidth} ${waistY - 22}, ${BODY_CENTER_X + waistHalfWidth} ${waistY}
-		C ${BODY_CENTER_X + waistHalfWidth} ${waistY + 23}, ${BODY_CENTER_X + hipHalfWidth} ${hipY - 16}, ${BODY_CENTER_X + hipHalfWidth} ${hipY + 4}
+		M ${BODY_CENTER_X - hipHalfWidth} ${hipY + 3}
+		C ${BODY_CENTER_X - hipHalfWidth} ${hipY - 12}, ${BODY_CENTER_X - waistHalfWidth} ${waistY + 16}, ${BODY_CENTER_X - waistHalfWidth} ${waistY}
+		C ${BODY_CENTER_X - waistHalfWidth} ${waistY - 16}, ${BODY_CENTER_X - bustHalfWidth} ${bustY + 18}, ${BODY_CENTER_X - bustHalfWidth} ${bustY + 3}
+		C ${BODY_CENTER_X - bustHalfWidth} ${bustY - 8}, ${BODY_CENTER_X - bustHalfWidth - 2} ${bustY - 16}, ${BODY_CENTER_X - shoulderHalfWidth + UNDERARM_INSET} ${shoulderY + UNDERARM_DROP}
+		C ${BODY_CENTER_X - shoulderHalfWidth + 2} ${shoulderY + 12}, ${BODY_CENTER_X - shoulderHalfWidth - 2} ${shoulderY + 6}, ${BODY_CENTER_X - shoulderJoinHalfWidth} ${shoulderY + 3}
+		C ${BODY_CENTER_X - 16} ${shoulderY - 8}, ${BODY_CENTER_X - 12} ${neckY + 12}, ${BODY_CENTER_X - 11} ${neckY}
+		L ${BODY_CENTER_X + 11} ${neckY}
+		C ${BODY_CENTER_X + 12} ${neckY + 12}, ${BODY_CENTER_X + 16} ${shoulderY - 8}, ${BODY_CENTER_X + shoulderJoinHalfWidth} ${shoulderY + 3}
+		C ${BODY_CENTER_X + shoulderHalfWidth + 2} ${shoulderY + 6}, ${BODY_CENTER_X + shoulderHalfWidth - 2} ${shoulderY + 12}, ${BODY_CENTER_X + shoulderHalfWidth - UNDERARM_INSET} ${shoulderY + UNDERARM_DROP}
+		C ${BODY_CENTER_X + bustHalfWidth + 2} ${bustY - 16}, ${BODY_CENTER_X + bustHalfWidth} ${bustY - 8}, ${BODY_CENTER_X + bustHalfWidth} ${bustY + 3}
+		C ${BODY_CENTER_X + bustHalfWidth} ${bustY + 18}, ${BODY_CENTER_X + waistHalfWidth} ${waistY - 16}, ${BODY_CENTER_X + waistHalfWidth} ${waistY}
+		C ${BODY_CENTER_X + waistHalfWidth} ${waistY + 16}, ${BODY_CENTER_X + hipHalfWidth} ${hipY - 12}, ${BODY_CENTER_X + hipHalfWidth} ${hipY + 3}
 	`;
 }
 
 function buildLeftArmPath(landmarks: BodyLandmarks) {
 	const { shoulderY, elbowY, wristY, shoulderHalfWidth, leftElbowX, leftWristX, upperArmHalfWidth, forearmHalfWidth } = landmarks;
 	const shoulderX = BODY_CENTER_X - shoulderHalfWidth;
-	const elbowHalfWidth = Math.max(upperArmHalfWidth * 0.72, forearmHalfWidth);
-	const wristHalfWidth = forearmHalfWidth * 0.58;
+	const elbowHalfWidth = Math.max(upperArmHalfWidth * 0.7, forearmHalfWidth);
+	const wristHalfWidth = forearmHalfWidth * 0.6;
 
 	return `
-		M ${shoulderX - upperArmHalfWidth} ${shoulderY + 4}
-		C ${shoulderX - upperArmHalfWidth - 1} ${shoulderY + 34}, ${leftElbowX - elbowHalfWidth} ${elbowY - 24}, ${leftElbowX - elbowHalfWidth} ${elbowY}
-		C ${leftElbowX - elbowHalfWidth + 1} ${elbowY + 25}, ${leftWristX - wristHalfWidth - 1} ${wristY - 20}, ${leftWristX - wristHalfWidth} ${wristY}
-		C ${leftWristX - wristHalfWidth} ${wristY + 8}, ${leftWristX - wristHalfWidth - 1} ${wristY + 18}, ${leftWristX - 3} ${wristY + 25}
-		C ${leftWristX - 2} ${wristY + 29}, ${leftWristX + 1} ${wristY + 29}, ${leftWristX + 2} ${wristY + 25}
-		L ${leftWristX + 2} ${wristY + 13}
-		L ${leftWristX + 5} ${wristY + 27}
-		C ${leftWristX + 6} ${wristY + 30}, ${leftWristX + 9} ${wristY + 29}, ${leftWristX + 8} ${wristY + 25}
-		L ${leftWristX + 6} ${wristY + 8}
-		C ${leftWristX + wristHalfWidth + 2} ${wristY + 4}, ${leftWristX + wristHalfWidth + 1} ${wristY + 1}, ${leftWristX + wristHalfWidth} ${wristY}
-		C ${leftWristX + wristHalfWidth + 1} ${wristY - 20}, ${leftElbowX + elbowHalfWidth} ${elbowY + 25}, ${leftElbowX + elbowHalfWidth} ${elbowY}
-		C ${leftElbowX + elbowHalfWidth} ${elbowY - 24}, ${shoulderX + UNDERARM_INSET} ${shoulderY + UNDERARM_DROP}, ${shoulderX + UNDERARM_INSET} ${shoulderY + UNDERARM_DROP}
+		M ${shoulderX - upperArmHalfWidth} ${shoulderY + 3}
+		C ${shoulderX - upperArmHalfWidth} ${shoulderY + 24}, ${leftElbowX - elbowHalfWidth} ${elbowY - 16}, ${leftElbowX - elbowHalfWidth} ${elbowY}
+		C ${leftElbowX - elbowHalfWidth} ${elbowY + 18}, ${leftWristX - wristHalfWidth} ${wristY - 14}, ${leftWristX - wristHalfWidth} ${wristY}
+		C ${leftWristX - wristHalfWidth} ${wristY + 6}, ${leftWristX - wristHalfWidth} ${wristY + 12}, ${leftWristX - 2} ${wristY + 16}
+		C ${leftWristX - 1} ${wristY + 18}, ${leftWristX + 1} ${wristY + 18}, ${leftWristX + 2} ${wristY + 16}
+		L ${leftWristX + 2} ${wristY + 8}
+		L ${leftWristX + 4} ${wristY + 18}
+		C ${leftWristX + 5} ${wristY + 20}, ${leftWristX + 7} ${wristY + 19}, ${leftWristX + 6} ${wristY + 16}
+		L ${leftWristX + 5} ${wristY + 6}
+		C ${leftWristX + wristHalfWidth + 1} ${wristY + 3}, ${leftWristX + wristHalfWidth} ${wristY + 1}, ${leftWristX + wristHalfWidth} ${wristY}
+		C ${leftWristX + wristHalfWidth} ${wristY - 14}, ${leftElbowX + elbowHalfWidth} ${elbowY + 18}, ${leftElbowX + elbowHalfWidth} ${elbowY}
+		C ${leftElbowX + elbowHalfWidth} ${elbowY - 16}, ${shoulderX + UNDERARM_INSET} ${shoulderY + UNDERARM_DROP}, ${shoulderX + UNDERARM_INSET} ${shoulderY + UNDERARM_DROP}
 	`;
 }
 
@@ -212,17 +207,17 @@ function buildLeftLegPath(landmarks: BodyLandmarks) {
 	const hipJointX = BODY_CENTER_X - hipJointHalfWidth;
 	const kneeX = BODY_CENTER_X - kneeHalfWidth;
 	const ankleX = BODY_CENTER_X - ankleHalfWidth;
-	const outerThighX = hipJointX - thighHalfWidth;
+	const outerThighX = hipJointX - thighHalfWidth * 0.9;
 
 	return `
-		M ${outerHipX} ${hipY + 4}
-		C ${outerThighX} ${hipY + 45}, ${outerThighX + 4} ${kneeY - 42}, ${kneeX - 10} ${kneeY}
-		C ${kneeX - 8} ${kneeY + 42}, ${ankleX - 6} ${ankleY - 44}, ${ankleX - 5} ${ankleY}
-		C ${ankleX - 13} ${ankleY + 9}, ${ankleX - 15} ${floorY - 2}, ${ankleX - 5} ${floorY}
-		L ${ankleX + 12} ${floorY}
-		C ${ankleX + 15} ${floorY - 4}, ${ankleX + 10} ${ankleY + 8}, ${ankleX + 6} ${ankleY}
-		C ${ankleX + 5} ${kneeY + 50}, ${kneeX + 8} ${kneeY + 8}, ${kneeX + 8} ${kneeY}
-		C ${kneeX + 7} ${kneeY - 42}, ${hipJointX + 7} ${crotchY + 20}, ${BODY_CENTER_X} ${crotchY}
+		M ${outerHipX} ${hipY + 3}
+		C ${outerThighX} ${hipY + 30}, ${outerThighX + 2} ${kneeY - 28}, ${kneeX - 6} ${kneeY}
+		C ${kneeX - 5} ${kneeY + 28}, ${ankleX - 4} ${ankleY - 28}, ${ankleX - 3} ${ankleY}
+		C ${ankleX - 8} ${ankleY + 6}, ${ankleX - 10} ${floorY - 2}, ${ankleX - 3} ${floorY}
+		L ${ankleX + 8} ${floorY}
+		C ${ankleX + 10} ${floorY - 3}, ${ankleX + 7} ${ankleY + 5}, ${ankleX + 4} ${ankleY}
+		C ${ankleX + 3} ${kneeY + 34}, ${kneeX + 5} ${kneeY + 5}, ${kneeX + 5} ${kneeY}
+		C ${kneeX + 4} ${kneeY - 28}, ${hipJointX + 5} ${crotchY + 14}, ${BODY_CENTER_X} ${crotchY}
 	`;
 }
 
