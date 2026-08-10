@@ -1,44 +1,36 @@
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "dompurify";
 
-/** Max length for admin-authored policy / product description HTML. */
-export const RICH_HTML_MAX_LENGTH = 20_000;
+/** Max HTML length for admin-authored policy documents. */
+export const POLICY_HTML_MAX_LENGTH = 20_000;
+export const RICH_HTML_MAX_LENGTH = 50_000;
 
-/** @deprecated Prefer RICH_HTML_MAX_LENGTH — kept for existing policy imports. */
-export const POLICY_HTML_MAX_LENGTH = RICH_HTML_MAX_LENGTH;
+const POLICY_ALLOWED_TAGS = ["h2", "h3", "p", "br", "strong", "em", "ul", "ol", "li", "a", "blockquote"] as const;
 
-const RICH_HTML_ALLOWED_TAGS = ["h2", "h3", "p", "br", "strong", "em", "u", "ul", "ol", "li", "a", "blockquote"] as const;
+export function isRichHtmlEmpty(html: string): boolean {
+	if (!html || !html.trim()) return true;
+	const stripped = html.replace(/<[^>]*>/g, "").trim();
+	return stripped.length === 0;
+}
 
-/**
- * True when HTML has no visible text (empty editor, `<p><br></p>`, etc.).
- */
-export function isRichHtmlEmpty(html: string | null | undefined): boolean {
-	if (!html?.trim()) {
-		return true;
+export function sanitizeRichHtml(html: string): string {
+	if (typeof window === "undefined" || !html.trim()) {
+		return "";
 	}
-	const text = html
-		.replace(/<[^>]*>/g, " ")
-		.replace(/&nbsp;/gi, " ")
-		.replace(/\s+/g, " ")
-		.trim();
-	return text.length === 0;
+	return DOMPurify.sanitize(html);
 }
 
 /**
- * Strip unsafe markup from admin-authored rich HTML before render. Runs on both
- * the server (via isomorphic-dompurify's DOM shim) and the client, so sanitized
- * copy is present in SSR output — no client-only hydration gate needed.
+ * Strip unsafe markup from admin-authored return / privacy policy HTML
+ * before rendering on the storefront. Sanitization needs a DOM, so it runs
+ * client-side only; the sole consumer (PolicyDocumentModal) renders nothing
+ * until hydrated, so the server never needs a sanitized value.
  */
-export function sanitizeRichHtml(html: string): string {
-	if (!html.trim()) {
+export function sanitizePolicyHtml(html: string): string {
+	if (typeof window === "undefined" || !html.trim()) {
 		return "";
 	}
 	return DOMPurify.sanitize(html, {
-		ALLOWED_TAGS: [...RICH_HTML_ALLOWED_TAGS],
+		ALLOWED_TAGS: [...POLICY_ALLOWED_TAGS],
 		ALLOWED_ATTR: ["href", "target", "rel"],
 	});
-}
-
-/** Alias used by policy modals. */
-export function sanitizePolicyHtml(html: string): string {
-	return sanitizeRichHtml(html);
 }
