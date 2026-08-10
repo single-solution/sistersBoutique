@@ -15,12 +15,9 @@ interface MeasurementField {
 }
 
 const FIELDS: MeasurementField[] = [
-	{ key: "bust", label: "Bust", placeholder: "e.g. 36", min: 24, max: 60 },
-	{ key: "waist", label: "Waist", placeholder: "e.g. 30", min: 20, max: 60 },
-	{ key: "hip", label: "Hip", placeholder: "e.g. 40", min: 24, max: 65 },
-	{ key: "height", label: "Height", placeholder: "e.g. 64", min: 48, max: 84 },
-	{ key: "armLength", label: "Arm length", placeholder: "e.g. 22", min: 17, max: 28 },
-	{ key: "waistToFloor", label: "Waist to floor", placeholder: "e.g. 40", min: 34, max: 48 },
+	{ key: "bust", label: "Bust", placeholder: "36", min: 24, max: 60 },
+	{ key: "waist", label: "Waist", placeholder: "30", min: 20, max: 60 },
+	{ key: "hip", label: "Hip", placeholder: "40", min: 24, max: 65 },
 ];
 
 type MeasurementUnit = "in" | "cm";
@@ -32,7 +29,6 @@ function displayMeasurement(valueInches: number | undefined, unit: MeasurementUn
 		return "";
 	}
 	const value = unit === "cm" ? valueInches * INCH_TO_CM : valueInches;
-
 	return String(Math.round(value * 10) / 10);
 }
 
@@ -46,12 +42,11 @@ interface SizeFinderProps {
 	onChange: (next: BodyMeasurements) => void;
 	recommended: SizeChartRow | null;
 	onSelectSize: (sizeValue: string) => void;
-	/** Whether the recommended size is already the selected variant size. */
 	isRecommendedSelected: boolean;
+	compact?: boolean;
 }
 
-/** Measurement inputs that resolve a recommended size from the chart. */
-export function SizeFinder({ chart, measurements, onChange, recommended, onSelectSize, isRecommendedSelected }: SizeFinderProps) {
+export function SizeFinder({ chart, measurements, onChange, recommended, onSelectSize, isRecommendedSelected, compact }: SizeFinderProps) {
 	const [unit, setUnit] = useState<MeasurementUnit>("in");
 	const [measurementValues, setMeasurementValues] = useState<MeasurementValues>(() => buildMeasurementValues(measurements, "in"));
 	const [measurementErrors, setMeasurementErrors] = useState<MeasurementErrors>({});
@@ -61,14 +56,12 @@ export function SizeFinder({ chart, measurements, onChange, recommended, onSelec
 		const parsed = Number.parseFloat(raw);
 		const field = FIELDS.find((candidate) => candidate.key === key);
 		if (!field || !Number.isFinite(parsed)) {
-			setMeasurementErrors((currentErrors) => ({ ...currentErrors, [key]: "Enter a measurement." }));
+			setMeasurementErrors((currentErrors) => ({ ...currentErrors, [key]: "Required" }));
 			return;
 		}
 		const valueInches = unit === "cm" ? parsed / INCH_TO_CM : parsed;
 		if (valueInches < field.min || valueInches > field.max) {
-			const minimum = displayMeasurement(field.min, unit);
-			const maximum = displayMeasurement(field.max, unit);
-			setMeasurementErrors((currentErrors) => ({ ...currentErrors, [key]: `Use ${minimum}-${maximum} ${unit}.` }));
+			setMeasurementErrors((currentErrors) => ({ ...currentErrors, [key]: "Out of range" }));
 			return;
 		}
 
@@ -92,15 +85,28 @@ export function SizeFinder({ chart, measurements, onChange, recommended, onSelec
 	const currentShape = classifyBodyShape(measurements) ?? "";
 
 	return (
-		<section aria-label="Find my size" className="space-y-4">
-			<div>
-				<h3 className="text-sm font-semibold text-[var(--color-ink-900)]">Find my size</h3>
-				<p className="text-[12px] text-[var(--color-ink-500)]">Adjust the realistic starting measurements. Sleeve, inseam, thigh, and upper arm are estimated automatically.</p>
-			</div>
-
-			<div className="space-y-2">
-				<label className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--color-ink-500)]">Quick start by shape</label>
-				<div className="flex flex-wrap gap-2">
+		<div className="space-y-3">
+			{/* Quick shape buttons */}
+			<div className="space-y-1">
+				<div className="flex items-center justify-between">
+					<span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-ink-600)]">Body shape</span>
+					<div className="flex rounded-full border border-[var(--color-ink-200)] bg-white/80 p-0.5" aria-label="Measurement unit">
+						{(["in", "cm"] as const).map((unitOption) => (
+							<button
+								key={unitOption}
+								type="button"
+								onClick={() => handleUnitChange(unitOption)}
+								className={classNames(
+									"rounded-full px-2 py-0.5 text-[9px] font-bold uppercase transition-colors",
+									unit === unitOption ? "bg-[var(--color-ink-900)] text-white" : "text-[var(--color-ink-500)]",
+								)}
+							>
+								{unitOption}
+							</button>
+						))}
+					</div>
+				</div>
+				<div className="flex flex-wrap gap-1.5">
 					{BODY_SHAPE_ORDER.map((shapeKey) => {
 						const isActive = currentShape === shapeKey;
 						return (
@@ -109,10 +115,10 @@ export function SizeFinder({ chart, measurements, onChange, recommended, onSelec
 								type="button"
 								onClick={() => handleShapeSelect(shapeKey)}
 								className={classNames(
-									"min-h-11 rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-colors",
+									"rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all",
 									isActive
-										? "border-[var(--color-ink-900)] bg-[var(--color-ink-900)] text-[var(--color-canvas)]"
-										: "border-[var(--color-ink-200)] bg-transparent text-[var(--color-ink-700)] hover:border-[var(--color-ink-400)] hover:text-[var(--color-ink-900)]",
+										? "bg-[var(--color-ink-900)] text-white shadow-xs"
+										: "bg-white/90 text-[var(--color-ink-700)] border border-[var(--color-ink-200)] hover:bg-white",
 								)}
 							>
 								{BODY_SHAPE_LABEL[shapeKey]}
@@ -122,63 +128,41 @@ export function SizeFinder({ chart, measurements, onChange, recommended, onSelec
 				</div>
 			</div>
 
-			<div className="flex items-center justify-between gap-3">
-				<span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--color-ink-500)]">Measurement unit</span>
-				<div className="flex rounded-full border border-[var(--color-ink-100)] bg-[var(--color-canvas-deep)] p-0.5" aria-label="Measurement unit">
-					{(["in", "cm"] as const).map((unitOption) => (
-						<button
-							key={unitOption}
-							type="button"
-							aria-pressed={unit === unitOption}
-							onClick={() => handleUnitChange(unitOption)}
-							className={classNames(
-								"min-h-11 min-w-11 rounded-full px-3 text-[12px] font-semibold uppercase transition-colors",
-								unit === unitOption ? "bg-[var(--color-surface)] text-[var(--color-ink-900)] shadow-sm" : "text-[var(--color-ink-500)]",
-							)}
-						>
-							{unitOption}
-						</button>
-					))}
-				</div>
-			</div>
-
-			<div className="grid grid-cols-2 gap-3">
+			{/* Quick Inputs: Bust, Waist, Hip */}
+			<div className="grid grid-cols-3 gap-2">
 				{FIELDS.map((field) => (
-					<Input
-						key={field.key}
-						label={`${field.label} (${unit})`}
-						type="number"
-						inputMode="decimal"
-						min={displayMeasurement(field.min, unit)}
-						max={displayMeasurement(field.max, unit)}
-						step={unit === "cm" ? "0.1" : "0.5"}
-						inputSize="sm"
-						placeholder={unit === "cm" ? displayMeasurement(Number.parseFloat(field.placeholder.replace("e.g. ", "")), "cm") : field.placeholder}
-						value={measurementValues[field.key]}
-						error={measurementErrors[field.key]}
-						aria-invalid={Boolean(measurementErrors[field.key])}
-						onChange={(event) => handleField(field.key, event.target.value)}
-					/>
+					<div key={field.key} className="space-y-0.5">
+						<label className="text-[9px] font-bold uppercase tracking-wider text-[var(--color-ink-600)]">
+							{field.label} ({unit})
+						</label>
+						<input
+							type="number"
+							inputMode="decimal"
+							step={unit === "cm" ? "0.5" : "0.5"}
+							value={measurementValues[field.key]}
+							onChange={(e) => handleField(field.key, e.target.value)}
+							className="w-full rounded-lg border border-[var(--color-ink-200)] bg-white/90 px-2 py-1 text-xs font-semibold text-[var(--color-ink-900)] shadow-2xs backdrop-blur-xs focus:border-[var(--color-ink-900)] focus:outline-hidden"
+						/>
+					</div>
 				))}
 			</div>
 
-			{recommended ? (
-				<div className="flex flex-col gap-3 rounded-[var(--radius-lg)] border border-[var(--color-accent-200)] bg-[var(--color-accent-50)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-					<p className="text-[13px] text-[var(--color-ink-700)]">
-						We suggest size <span className="font-semibold text-[var(--color-ink-900)]">{recommended.label}</span>
+			{/* Recommendation Card */}
+			{recommended && (
+				<div className="flex items-center justify-between rounded-xl border border-[var(--color-accent-200)] bg-white/90 p-2.5 shadow-sm backdrop-blur-md">
+					<p className="text-xs font-medium text-[var(--color-ink-800)]">
+						Suggested size: <span className="font-bold text-[var(--color-ink-900)]">{recommended.label}</span>
 					</p>
 					<button
 						type="button"
 						onClick={() => onSelectSize(recommended.sizeValue)}
 						disabled={isRecommendedSelected}
-						className="rounded-full bg-[var(--color-ink-900)] px-3.5 py-1.5 text-[12px] font-semibold text-[var(--color-canvas)] transition-opacity disabled:opacity-50"
+						className="rounded-full bg-[var(--color-ink-900)] px-3 py-1 text-[11px] font-bold text-white transition-opacity disabled:opacity-50"
 					>
-						{isRecommendedSelected ? "Selected" : "Use this size"}
+						{isRecommendedSelected ? "Selected" : "Select Size"}
 					</button>
 				</div>
-			) : (
-				<p className="text-[12px] text-[var(--color-ink-400)]">Add at least your bust to see a suggestion. Guidance only - fit varies by cut.</p>
 			)}
-		</section>
+		</div>
 	);
 }

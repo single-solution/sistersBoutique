@@ -25,9 +25,9 @@ export function SizeGuide({ chart, selectedSizeValue }: SizeGuideProps) {
 	};
 
 	return (
-		<section aria-label="Size chart" className="space-y-3">
+		<section aria-label="Size chart" className="space-y-4">
 			<div className="flex items-center justify-between gap-3">
-				<h3 className="text-sm font-semibold text-[var(--color-ink-900)]">{chart.name}</h3>
+				<h3 className="text-base font-bold text-[var(--color-ink-900)]">{chart.name}</h3>
 				<div className="inline-flex overflow-hidden rounded-full border border-[var(--color-ink-200)] text-[12px] font-semibold">
 					{(["in", "cm"] as const).map((option) => (
 						<button
@@ -46,15 +46,15 @@ export function SizeGuide({ chart, selectedSizeValue }: SizeGuideProps) {
 				</div>
 			</div>
 
-			<div className="overflow-x-auto">
+			<div className="overflow-x-auto rounded-xl border border-[var(--color-ink-100)]">
 				<table className="w-full border-collapse text-left text-[13px]">
 					<thead>
-						<tr className="border-b border-[var(--color-ink-200)] text-[11px] uppercase tracking-[0.1em] text-[var(--color-ink-500)]">
-							<th scope="col" className="py-2 pr-3 font-semibold">
+						<tr className="border-b border-[var(--color-ink-200)] bg-[var(--color-ink-50)] text-[11px] uppercase tracking-[0.1em] text-[var(--color-ink-500)]">
+							<th scope="col" className="py-2.5 pl-4 pr-3 font-semibold">
 								Size
 							</th>
 							{chart.measurementKeys.map((column) => (
-								<th key={column.key} scope="col" className="px-3 py-2 font-semibold whitespace-nowrap">
+								<th key={column.key} scope="col" className="px-3 py-2.5 font-semibold whitespace-nowrap">
 									{column.label}
 								</th>
 							))}
@@ -67,20 +67,20 @@ export function SizeGuide({ chart, selectedSizeValue }: SizeGuideProps) {
 								<tr
 									key={row.sizeValue}
 									className={classNames(
-										"border-b border-[var(--color-ink-100)]",
+										"border-b border-[var(--color-ink-100)] last:border-b-0",
 										isSelected ? "bg-[var(--color-accent-50)] text-[var(--color-ink-900)]" : "text-[var(--color-ink-700)]",
 									)}
 								>
-									<th scope="row" className="py-2 pr-3 font-semibold whitespace-nowrap">
+									<th scope="row" className="py-2.5 pl-4 pr-3 font-semibold whitespace-nowrap">
 										<span className="inline-flex items-center gap-1.5">
 											{row.label}
 											{isSelected ? (
-												<span className="rounded-full bg-[var(--color-accent-600)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-white">Your size</span>
+												<span className="rounded-full bg-[var(--color-accent-600)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] text-white">Your size</span>
 											) : null}
 										</span>
 									</th>
 									{chart.measurementKeys.map((column) => (
-										<td key={column.key} className="px-3 py-2 tabular-nums">
+										<td key={column.key} className="px-3 py-2.5 tabular-nums">
 											{formatValue(row.values[column.key])}
 										</td>
 									))}
@@ -90,13 +90,6 @@ export function SizeGuide({ chart, selectedSizeValue }: SizeGuideProps) {
 					</tbody>
 				</table>
 			</div>
-
-			<p className="text-[11px] text-[var(--color-ink-400)]">
-				Measurements are body measurements in {unit === "cm" ? "centimetres" : "inches"}, not garment dimensions.
-			</p>
-
-			{chart.fitAdvice ? <p className="text-[13px] leading-relaxed text-[var(--color-ink-600)]">{chart.fitAdvice}</p> : null}
-			{chart.notes ? <p className="text-[12px] leading-relaxed text-[var(--color-ink-500)]">{chart.notes}</p> : null}
 		</section>
 	);
 }
