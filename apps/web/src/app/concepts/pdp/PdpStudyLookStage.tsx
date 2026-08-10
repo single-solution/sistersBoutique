@@ -229,8 +229,8 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 				return;
 			}
 			const slides = track.querySelectorAll<HTMLElement>(`.${styles.ribbonSlide}`);
-			const duration = reducedMotion.current || !animate ? 0 : 1.05;
-			const ease = "power3.inOut";
+			const duration = reducedMotion.current || !animate ? 0 : 0.4;
+			const ease = "power2.out";
 
 			slides.forEach((slide, slideIndex) => {
 				const delta = circularDelta(slideIndex, activeIndex, count);
@@ -266,10 +266,10 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 					xPercent: -50,
 					yPercent: -50,
 					x: 0,
-					y: 220,
+					y: 120,
 					z: 80,
 					rotationY: 0,
-					scale: 0.86,
+					scale: 0.88,
 					opacity: 0,
 					zIndex: 50,
 					force3D: true,
@@ -304,18 +304,16 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 		const timeline = gsap.timeline({ defaults: { force3D: true } });
 
 		if (centerSlide) {
-			/* Keep xPercent/yPercent in the tween so centering cannot drift if
-			   width resolves mid-flight after soft navigation. */
 			timeline.fromTo(
 				centerSlide,
 				{
 					xPercent: -50,
 					yPercent: -50,
 					x: 0,
-					y: 220,
+					y: 120,
 					z: 80,
 					rotationY: 0,
-					scale: 0.86,
+					scale: 0.88,
 					opacity: 0,
 				},
 				{
@@ -327,18 +325,18 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 					rotationY: 0,
 					scale: 1,
 					opacity: 1,
-					duration: 1.55,
+					duration: 0.5,
 					ease: "power2.out",
 				},
 				0,
 			);
 			if (centerImage) {
-				timeline.to(centerImage, { scale: 1.08, duration: 1.55, ease: "power2.out" }, 0);
+				timeline.to(centerImage, { scale: 1.08, duration: 0.5, ease: "power2.out" }, 0);
 			}
 		}
 
 		/* Sides begin once the main look is halfway through its rise. */
-		timeline.addLabel("main-done", 1.55 / 2);
+		timeline.addLabel("main-done", 0.25);
 
 		const sideEntries = slides
 			.map((slide, slideIndex) => ({ slide, slideIndex, delta: circularDelta(slideIndex, activeIndex, count) }))
@@ -452,6 +450,10 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 			const liveDelta = baseDelta + dragProgress;
 			const pose = ribbonPose(liveDelta, count);
 			applySlidePose(slide, pose, 0, "none");
+
+			const isNearCenter = Math.abs(liveDelta) < 0.38;
+			slide.dataset.active = isNearCenter ? "true" : "false";
+			slide.setAttribute("aria-hidden", isNearCenter ? "false" : "true");
 		});
 	};
 
