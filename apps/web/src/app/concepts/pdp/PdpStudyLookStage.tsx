@@ -161,8 +161,12 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 	const hasLaidOut = useRef(false);
 	const reducedMotion = useRef(false);
 	const pointerHandledRef = useRef(false);
+	const isDraggingRef = useRef(false);
 	const dragStartX = useRef<number | null>(null);
 	const dragStartY = useRef<number | null>(null);
+	const dragCurrentX = useRef<number>(0);
+	const lastTimeRef = useRef<number>(0);
+	const velocityXRef = useRef<number>(0);
 
 	const count = looks.length;
 	const active = looks[index] ?? looks[0];
@@ -435,29 +439,99 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 		{ scope: rootRef, dependencies: [index, count, layoutRibbon, playEntrance] },
 	);
 
+	const updateLiveDrag = (offsetPx: number) => {
+		const track = trackRef.current;
+		if (!track || count === 0) return;
+		const slides = track.querySelectorAll<HTMLElement>(`.${styles.ribbonSlide}`);
+		const slideWidth = slides[0]?.offsetWidth || 300;
+		const dragProgress = offsetPx / (slideWidth * 0.65);
+		const activeIndex = indexRef.current;
+
+		slides.forEach((slide, slideIndex) => {
+			const baseDelta = circularDelta(slideIndex, activeIndex, count);
+			const liveDelta = baseDelta + dragProgress;
+			const pose = ribbonPose(liveDelta, count);
+			applySlidePose(slide, pose, 0, "none");
+		});
+	};
+
 	const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
 		if (event.pointerType === "mouse" && event.button !== 0) {
 			return;
 		}
 		dragStartX.current = event.clientX;
 		dragStartY.current = event.clientY;
+		dragCurrentX.current = event.clientX;
+		lastTimeRef.current = performance.now();
+		velocityXRef.current = 0;
+		isDraggingRef.current = false;
+
+		try {
+			(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+		} catch {
+			// ignore pointer capture failure
+		}
+	};
+
+	const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+		if (dragStartX.current === null) {
+			return;
+		}
+		const offsetPx = event.clientX - dragStartX.current;
+		const now = performance.now();
+		const dt = now - lastTimeRef.current;
+		if (dt > 0) {
+			velocityXRef.current = (event.clientX - dragCurrentX.current) / dt;
+		}
+		dragCurrentX.current = event.clientX;
+		lastTimeRef.current = now;
+
+		if (Math.abs(offsetPx) > 6) {
+			isDraggingRef.current = true;
+		}
+
+		if (isDraggingRef.current) {
+			updateLiveDrag(offsetPx);
+		}
 	};
 
 	const onPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
 		if (dragStartX.current === null) {
 			return;
 		}
-		const deltaX = event.clientX - dragStartX.current;
-		const deltaY = event.clientY - (dragStartY.current ?? event.clientY);
+		const offsetPx = event.clientX - dragStartX.current;
+		const isDrag = isDraggingRef.current;
+		const velocity = velocityXRef.current;
+
 		dragStartX.current = null;
 		dragStartY.current = null;
+		isDraggingRef.current = false;
 
-		if (Math.abs(deltaX) > 28 && Math.abs(deltaX) > Math.abs(deltaY)) {
+		try {
+			(event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
+		} catch {
+			// ignore release pointer capture failure
+		}
+
+		if (isDrag) {
 			pointerHandledRef.current = true;
-			if (deltaX < 0) {
-				goTo(indexRef.current + 1);
+			const track = trackRef.current;
+			const slides = track?.querySelectorAll<HTMLElement>(`.${styles.ribbonSlide}`);
+			const slideWidth = slides?.[0]?.offsetWidth || 300;
+			const dragProgress = offsetPx / (slideWidth * 0.65);
+
+			let step = 0;
+			if (dragProgress < -0.16 || velocity < -0.35) {
+				step = 1;
+			} else if (dragProgress > 0.16 || velocity > 0.35) {
+				step = -1;
+			}
+
+			if (step !== 0) {
+				const nextIndex = ((indexRef.current + step) % count + count) % count;
+				setIndex(nextIndex);
 			} else {
-				goTo(indexRef.current - 1);
+				layoutRibbon(indexRef.current, true);
 			}
 			return;
 		}
@@ -493,7 +567,9 @@ export function PdpStudyLookStage({ looks, className, variant = "viewport" }: Pd
 					ref={trackRef}
 					className={styles.ribbonTrack}
 					onPointerDown={onPointerDown}
+					onPointerMove={onPointerMove}
 					onPointerUp={onPointerUp}
+					onPointerCancel={onPointerUp}
 					role="presentation"
 				>
 					{looks.map((look, lookIndex) => {
