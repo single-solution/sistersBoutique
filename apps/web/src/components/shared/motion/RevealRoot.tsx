@@ -67,33 +67,29 @@ function RevealRootDriver({ routeKey }: { routeKey: string }) {
 				return;
 			}
 			document.querySelectorAll<HTMLElement>(REVEAL_CANDIDATE).forEach((element) => {
-				if (isInViewport(element)) {
-					reveal(element, isScrollRevealTarget(element));
-					return;
-				}
 				observer?.observe(element);
 			});
 		};
 
 		const visitAddedNode = (node: HTMLElement) => {
-			if (node.matches?.(REVEAL_CANDIDATE)) {
-				if (isInViewport(node)) {
+			if (!supportsIO || !observer) {
+				if (node.matches?.(REVEAL_CANDIDATE)) {
 					reveal(node, isScrollRevealTarget(node));
-				} else {
-					observer?.observe(node);
 				}
-			}
-			const querySelector = node.querySelector?.bind(node);
-			if (!querySelector || !querySelector(".reveal, .reveal-fade")) {
+				node.querySelectorAll?.<HTMLElement>(REVEAL_CANDIDATE).forEach((element) => {
+					reveal(element, isScrollRevealTarget(element));
+				});
 				return;
 			}
-			node.querySelectorAll<HTMLElement>(REVEAL_CANDIDATE).forEach((element) => {
-				if (isInViewport(element)) {
-					reveal(element, isScrollRevealTarget(element));
-				} else {
+
+			if (node.matches?.(REVEAL_CANDIDATE)) {
+				observer.observe(node);
+			}
+			if (node.querySelector?.(".reveal, .reveal-fade")) {
+				node.querySelectorAll<HTMLElement>(REVEAL_CANDIDATE).forEach((element) => {
 					observer?.observe(element);
-				}
-			});
+				});
+			}
 		};
 
 		/** Soft-nav / RSC streams insert HTML before React hydrates. Mutating
@@ -153,9 +149,7 @@ function RevealRootDriver({ routeKey }: { routeKey: string }) {
 
 		const watchdog = window.setTimeout(() => {
 			document.querySelectorAll<HTMLElement>(REVEAL_CANDIDATE).forEach((element) => {
-				if (isInViewport(element)) {
-					reveal(element, isScrollRevealTarget(element));
-				}
+				reveal(element, isScrollRevealTarget(element));
 			});
 		}, REVEAL_WATCHDOG_MS);
 

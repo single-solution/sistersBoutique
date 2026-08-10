@@ -58,7 +58,7 @@ export function ProductCard({ product, catalogProduct, priority = false }: Produ
 			onFocus={prefetchHandlers.onFocus}
 		>
 			<div className="relative aspect-[3/4] w-full overflow-hidden rounded-[var(--radius-md)] bg-[var(--color-canvas-deep)]">
-				<div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.03]">
+				<div className="absolute inset-0 transition-transform duration-500 ease-out will-change-transform [backface-visibility:hidden] group-hover:scale-[1.03]">
 					<ProductImage
 						image={productHeroImage}
 						variant="card"
