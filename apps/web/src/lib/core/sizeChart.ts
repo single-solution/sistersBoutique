@@ -92,10 +92,30 @@ async function resolveChartId(product: ProductSizeChartRef): Promise<string | nu
 	return null;
 }
 
+export const DEFAULT_WOMENS_SIZE_CHART: SizeChart = {
+	id: "default-womens-size-chart",
+	name: "Standard Women's Size Guide",
+	unitPrimary: "in",
+	measurementKeys: [
+		{ key: "bust", label: "Bust" },
+		{ key: "waist", label: "Waist" },
+		{ key: "hip", label: "Hip" },
+		{ key: "kameez", label: "Shirt Length" },
+	],
+	rows: [
+		{ sizeValue: "xs", label: "XS (Extra Small)", values: { bust: 32, waist: 26, hip: 36, kameez: 38 } },
+		{ sizeValue: "s", label: "S (Small)", values: { bust: 35, waist: 28, hip: 38, kameez: 39 } },
+		{ sizeValue: "m", label: "M (Medium)", values: { bust: 38, waist: 31, hip: 41, kameez: 40 } },
+		{ sizeValue: "l", label: "L (Large)", values: { bust: 42, waist: 35, hip: 45, kameez: 41 } },
+		{ sizeValue: "xl", label: "XL (Extra Large)", values: { bust: 46, waist: 39, hip: 49, kameez: 42 } },
+	],
+	fitAdvice: "Designed for a standard relaxed fit. Select your standard size or use our interactive size finder to match your body measurements.",
+	notes: "All measurements are body measurements in inches unless toggled to centimetres.",
+};
+
 /**
  * Effective size chart for a product slug, applying the inheritance chain.
- * Returns null when the product hides the guide, the chain assigns nothing, or
- * the resolved chart is missing/inactive.
+ * Returns custom chart if assigned, or default fallback chart when unspecified.
  */
 export async function resolveProductSizeChart(slug: string): Promise<SizeChart | null> {
 	await connectDB();
@@ -103,15 +123,18 @@ export async function resolveProductSizeChart(slug: string): Promise<SizeChart |
 		.select({ sizeChartId: 1, hideSizeGuide: 1, brandSlug: 1, categorySlug: 1 })
 		.lean<ProductSizeChartRef>();
 	if (!product) {
+		return DEFAULT_WOMENS_SIZE_CHART;
+	}
+	if (product.hideSizeGuide) {
 		return null;
 	}
 	const chartId = await resolveChartId(product);
 	if (!chartId) {
-		return null;
+		return DEFAULT_WOMENS_SIZE_CHART;
 	}
 	const chart = await SizeChartModel.findOne({ _id: chartId, isActive: true }).lean();
 	if (!chart) {
-		return null;
+		return DEFAULT_WOMENS_SIZE_CHART;
 	}
 	return serializeSizeChart(chart);
 }

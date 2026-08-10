@@ -249,7 +249,7 @@ export function VerticalRunwayProductPdp({
 				onAddToBag={handleAddToCart}
 				addDisabled={!canAdd}
 				addLabel={hasJustBeenAdded ? "Added" : "Add to bag"}
-				sizeGuideTrigger={garmentType === "stitched" ? sizeAndFit : undefined}
+				sizeGuideTrigger={sizeAndFit}
 				productName={product.name}
 				thumbnailSrc={heroImage?.variants.card}
 				thumbnailAlt={heroImage?.alt || product.name}
