@@ -50,7 +50,7 @@ export function SizeGuide({ chart, selectedSizeValue }: SizeGuideProps) {
 				<table className="w-full border-collapse text-left text-[12.5px]">
 					<thead>
 						<tr className="border-b border-[var(--color-ink-200)] bg-[var(--color-ink-50)] text-[11px] uppercase tracking-[0.08em] text-[var(--color-ink-500)]">
-							<th scope="col" className="py-2.5 pl-3.5 pr-2 font-semibold w-1">
+							<th scope="col" className="py-2.5 pl-3.5 pr-2 font-semibold">
 								Size
 							</th>
 							{chart.measurementKeys.map((column) => (
@@ -67,15 +67,19 @@ export function SizeGuide({ chart, selectedSizeValue }: SizeGuideProps) {
 								<tr
 									key={row.sizeValue}
 									className={classNames(
-										"border-b border-[var(--color-ink-100)] last:border-b-0 transition-colors",
-										isSelected ? "bg-[var(--color-accent-50)]/70" : "hover:bg-[var(--color-ink-50)]/50",
+										"border-b border-[var(--color-ink-100)] last:border-b-0 transition-colors hover:bg-[var(--color-ink-50)]/50",
+										isSelected && "bg-[var(--color-accent-50)]/70",
 									)}
 								>
-									<th scope="row" className="py-2.5 pl-3.5 pr-2 font-semibold text-[var(--color-ink-800)] whitespace-nowrap">
-										<div className="flex items-center gap-2">
-											<span>{row.label}</span>
+									<th scope="row" className="py-2.5 pl-3.5 pr-2 font-semibold whitespace-nowrap">
+										<div className="flex flex-col">
+											<span className={classNames(isSelected ? "text-[var(--color-accent-700)] font-extrabold" : "text-[var(--color-ink-900)]")}>
+												{row.label}
+											</span>
 											{isSelected && (
-												<span className="rounded-full bg-[var(--color-accent-600)] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.04em] text-white">Your size</span>
+												<span className="mt-0.5 w-fit rounded-full bg-[var(--color-accent-600)] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.04em] text-white">
+													Your size
+												</span>
 											)}
 										</div>
 									</th>
