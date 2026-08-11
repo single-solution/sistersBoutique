@@ -19,8 +19,8 @@ function displayValue(valueInches: number | undefined, unit: MeasurementUnit): n
 	return Math.round(val * 10) / 10;
 }
 
-/** Determine logical min & max ranges for a measurement key from chart rows. */
-function getRangeForKey(chart: SizeChart, key: string): { min: number; max: number } {
+/** Determine logical min, max, and default starting value for a measurement key from chart rows. */
+function getRangeForKey(chart: SizeChart, key: string): { min: number; max: number; defaultVal: number } {
 	const values = chart.rows
 		.map((row) => row.values[key])
 		.filter((val): val is number => typeof val === "number" && Number.isFinite(val) && val > 0);
@@ -28,20 +28,23 @@ function getRangeForKey(chart: SizeChart, key: string): { min: number; max: numb
 	if (values.length > 0) {
 		const minVal = Math.min(...values);
 		const maxVal = Math.max(...values);
+		const midIndex = Math.floor(values.length / 2);
+		const defaultVal = values[midIndex] ?? values[0];
 		return {
 			min: Math.max(10, Math.floor(minVal - 4)),
 			max: Math.ceil(maxVal + 6),
+			defaultVal,
 		};
 	}
 
-	if (key === "bust") return { min: 26, max: 56 };
-	if (key === "waist") return { min: 20, max: 52 };
-	if (key === "hip") return { min: 30, max: 62 };
-	return { min: 15, max: 55 };
+	if (key === "bust") return { min: 26, max: 56, defaultVal: 37 };
+	if (key === "waist") return { min: 20, max: 52, defaultVal: 29 };
+	if (key === "hip") return { min: 30, max: 62, defaultVal: 38 };
+	return { min: 15, max: 55, defaultVal: 38 };
 }
 
 export function SizeFinder({ chart, measurements, unit, onChange, className = "" }: SizeFinderProps) {
-	// Dynamically build slider fields for ALL measurement keys in the size chart
+	// Dynamically build slider fields ONLY for measurement keys present in the size chart table
 	const fields = chart.measurementKeys.map((col) => {
 		const range = getRangeForKey(chart, col.key);
 		return {
@@ -49,6 +52,7 @@ export function SizeFinder({ chart, measurements, unit, onChange, className = ""
 			label: col.label,
 			min: range.min,
 			max: range.max,
+			defaultVal: range.defaultVal,
 		};
 	});
 
@@ -59,10 +63,9 @@ export function SizeFinder({ chart, measurements, unit, onChange, className = ""
 
 	return (
 		<div className={`space-y-3 select-none ${className}`}>
-			{/* All measurement sliders render cleanly without inner card scrolling */}
-			<div className="space-y-3.5">
+			<div className="space-y-3">
 				{fields.map((field) => {
-					const valInches = measurements[field.key] ?? field.min;
+					const valInches = measurements[field.key] ?? field.defaultVal;
 					const currentVal = displayValue(valInches, unit);
 					const minVal = displayValue(field.min, unit);
 					const maxVal = displayValue(field.max, unit);
@@ -71,7 +74,7 @@ export function SizeFinder({ chart, measurements, unit, onChange, className = ""
 					return (
 						<div key={field.key} className="space-y-1">
 							<div className="flex items-center justify-between text-xs font-semibold text-[var(--color-ink-900)]">
-								<label htmlFor={`slider-${field.key}`} className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-ink-700)]">
+								<label htmlFor={`slider-${field.key}`} className="text-[10.5px] font-bold uppercase tracking-wider text-[var(--color-ink-700)]">
 									{field.label}
 								</label>
 								<span className="rounded bg-white/90 px-2 py-0.5 font-mono text-[11px] font-extrabold text-[var(--color-ink-900)] shadow-2xs">

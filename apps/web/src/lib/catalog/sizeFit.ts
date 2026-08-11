@@ -127,37 +127,58 @@ export function primaryKeyForChart(chart: SizeChart): PrimaryMeasurementKey | nu
  * whose value is at least the shopper's measurement (round up), falling back to the
  * largest row when the shopper exceeds every listed size.
  */
+export const CRITICAL_BODY_KEYS = ["bust", "chest", "waist", "hip"] as const;
+
 export function recommendSize(chart: SizeChart, measurements: BodyMeasurements): SizeChartRow | null {
+	if (!chart.rows || chart.rows.length === 0) {
+		return null;
+	}
+
 	const comparisons = Object.entries(measurements)
 		.map(([measurementKey, target]) => {
 			if (typeof target !== "number" || !Number.isFinite(target) || target <= 0) {
 				return null;
 			}
-			const chartKey = BODY_MEASUREMENT_CHART_KEYS[measurementKey as keyof BodyMeasurements].find((candidate) => chartHasKey(chart, candidate));
+			const candidates = BODY_MEASUREMENT_CHART_KEYS[measurementKey as keyof BodyMeasurements] ?? [measurementKey];
+			const chartKey = candidates.find((candidate) => chartHasKey(chart, candidate)) ?? (chartHasKey(chart, measurementKey) ? measurementKey : null);
 
 			return chartKey ? { chartKey, target } : null;
 		})
 		.filter((comparison): comparison is { chartKey: string; target: number } => comparison !== null);
+
 	if (comparisons.length === 0) {
 		return null;
 	}
-	const primaryComparison = comparisons.find((comparison) => PRIMARY_MEASUREMENT_KEYS.includes(comparison.chartKey as PrimaryMeasurementKey)) ?? comparisons[0];
-	const sorted = chart.rows
+
+	// Focus primarily on critical body circumferences (Bust, Waist, Hip) so length preferences do not distort size recommendations
+	const criticalComparisons = comparisons.filter((c) =>
+		CRITICAL_BODY_KEYS.some((key) => c.chartKey.toLowerCase().includes(key)),
+	);
+	const activeComparisons = criticalComparisons.length > 0 ? criticalComparisons : comparisons;
+
+	// Primary sort by Bust / Chest ascending
+	const primaryComparison =
+		activeComparisons.find((c) => c.chartKey.toLowerCase().includes("bust") || c.chartKey.toLowerCase().includes("chest")) ??
+		activeComparisons[0];
+
+	const sortedRows = chart.rows
 		.filter((row) => typeof row.values[primaryComparison.chartKey] === "number")
 		.slice()
-		.sort((left, right) => left.values[primaryComparison.chartKey] - right.values[primaryComparison.chartKey]);
-	if (sorted.length === 0) {
+		.sort((left, right) => (left.values[primaryComparison.chartKey] ?? 0) - (right.values[primaryComparison.chartKey] ?? 0));
+
+	if (sortedRows.length === 0) {
 		return null;
 	}
-	return (
-		sorted.find((row) =>
-			comparisons.every((comparison) => {
-				const rowValue = row.values[comparison.chartKey];
 
-				return typeof rowValue !== "number" || rowValue >= comparison.target;
-			}),
-		) ?? sorted[sorted.length - 1]
+	// Pick the smallest size row where all active body circumferences fit safely (rowValue >= userTarget)
+	const fittingRow = sortedRows.find((row) =>
+		activeComparisons.every((comp) => {
+			const rowValue = row.values[comp.chartKey];
+			return typeof rowValue !== "number" || rowValue >= comp.target;
+		}),
 	);
+
+	return fittingRow ?? sortedRows[sortedRows.length - 1];
 }
 
 /** Fill optional measurements with guarded ratios from public adult female anthropometry data. */
