@@ -17,6 +17,7 @@ interface FitPreviewProps {
 	measurements?: { bust?: number; waist?: number; hip?: number };
 	garment?: GarmentHemline[];
 	angle?: ViewAngle;
+	predictedSize?: BodySize;
 	className?: string;
 }
 
@@ -54,17 +55,31 @@ export function hasAngleImages(angle: ViewAngle): boolean {
 	return Object.keys(IMAGE_MATRIX[angle]).length > 0;
 }
 
-function resolveBodySize(bust: number): BodySize {
-	if (bust < 33) return "xs";
-	if (bust < 36) return "s";
-	if (bust < 39) return "m";
-	if (bust < 43) return "l";
+function resolveBodySize(measurements?: { bust?: number; waist?: number; hip?: number }): BodySize {
+	const bust = measurements?.bust ?? 36;
+	const waist = measurements?.waist ?? 29;
+	const hip = measurements?.hip ?? 38;
+
+	// Score size category (1=XS, 2=S, 3=M, 4=L, 5=XL) for each primary body circumference
+	const bustScore = bust < 33 ? 1 : bust < 36 ? 2 : bust < 39 ? 3 : bust < 43 ? 4 : 5;
+	const waistScore = waist < 26 ? 1 : waist < 29 ? 2 : waist < 32 ? 3 : waist < 36 ? 4 : 5;
+	const hipScore = hip < 36 ? 1 : hip < 39 ? 2 : hip < 42 ? 3 : hip < 46 ? 4 : 5;
+
+	// Evaluate max category so increasing Bust, Waist, OR Hip updates the model fit preview image in real-time
+	const finalScore = Math.max(bustScore, waistScore, hipScore);
+
+	if (finalScore <= 1) return "xs";
+	if (finalScore === 2) return "s";
+	if (finalScore === 3) return "m";
+	if (finalScore === 4) return "l";
 	return "xl";
 }
 
-export function FitPreview({ measurements, angle = "front", className = "" }: FitPreviewProps) {
-	const bust = measurements?.bust ?? 36;
-	const bodySize = useMemo(() => resolveBodySize(bust), [bust]);
+export function FitPreview({ measurements, garment, angle = "front", predictedSize, className = "" }: FitPreviewProps) {
+	const bodySize = useMemo(
+		() => predictedSize ?? resolveBodySize(measurements),
+		[predictedSize, measurements?.bust, measurements?.waist, measurements?.hip],
+	);
 
 	// Preload all 15 model images immediately into browser GPU cache
 	useEffect(() => {

@@ -160,6 +160,13 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 											measurements={{ bust: previewBust, waist: previewWaist, hip: previewHip }}
 											garment={hemlines}
 											angle={angle}
+											predictedSize={
+												previewRow?.label
+													? (["xs", "s", "m", "l", "xl"].includes(previewRow.label.toLowerCase())
+														? (previewRow.label.toLowerCase() as any)
+														: undefined)
+													: undefined
+											}
 											className="h-full w-full"
 										/>
 
