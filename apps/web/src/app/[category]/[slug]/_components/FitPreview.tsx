@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 /* ─── Types ─── */
 
@@ -20,9 +20,10 @@ interface FitPreviewProps {
 	className?: string;
 }
 
-/* ─── Image Matrix ─── */
+/* ─── Image Matrix (15 Total Images) ─── */
 
 export const ANGLES: ViewAngle[] = ["front", "side", "back"];
+export const BODY_SIZES: BodySize[] = ["xs", "s", "m", "l", "xl"];
 export const ANGLE_LABELS: Record<ViewAngle, string> = { front: "Front", side: "Side", back: "Back" };
 
 export const IMAGE_MATRIX: Record<ViewAngle, Record<BodySize, string>> = {
@@ -65,32 +66,53 @@ export function FitPreview({ measurements, angle = "front", className = "" }: Fi
 	const bust = measurements?.bust ?? 36;
 	const bodySize = useMemo(() => resolveBodySize(bust), [bust]);
 
+	// Preload all 15 model images immediately into browser GPU cache
+	useEffect(() => {
+		for (const a of ANGLES) {
+			for (const s of BODY_SIZES) {
+				const url = IMAGE_MATRIX[a][s];
+				if (url) {
+					const img = new window.Image();
+					img.src = url;
+				}
+			}
+		}
+	}, []);
+
 	return (
 		<div className={`relative flex h-full w-full flex-col select-none ${className}`}>
-			{/* Edge-to-edge full bleed clean image canvas */}
+			{/* Edge-to-edge full bleed studio canvas (#f5f3f0) */}
 			<div className="relative flex-1 w-full overflow-hidden bg-[#f5f3f0]">
-				{/* Model Images with 500ms Crossfade */}
-				{(["xs", "s", "m", "l", "xl"] as BodySize[]).map((size) => {
-					const src = IMAGE_MATRIX[angle]?.[size];
-					if (!src) return null;
-					const isActive = size === bodySize;
-					return (
-						<div
-							key={`${angle}-${size}`}
-							className="absolute inset-0 transition-opacity duration-500 ease-in-out"
-							style={{ opacity: isActive ? 1 : 0, zIndex: isActive ? 1 : 0 }}
-						>
-							<Image
-								src={src}
-								alt={`${ANGLE_LABELS[angle]} view — ${size.toUpperCase()} body shape`}
-								fill
-								sizes="(max-width: 768px) 100vw, 500px"
-								className="object-contain object-center"
-								priority={isActive}
-							/>
-						</div>
-					);
-				})}
+				{/* 
+				  Hardware-Accelerated Persistent Image Stack:
+				  Renders all layers simultaneously without React unmounting keys.
+				  Smoothly transitions opacity over 600ms so the canvas NEVER flashes blank.
+				*/}
+				{ANGLES.flatMap((a) =>
+					BODY_SIZES.map((s) => {
+						const src = IMAGE_MATRIX[a][s];
+						const isActive = a === angle && s === bodySize;
+						return (
+							<div
+								key={`layer-${a}-${s}`}
+								className="absolute inset-0 transition-opacity duration-600 ease-in-out pointer-events-none will-change-[opacity]"
+								style={{
+									opacity: isActive ? 1 : 0,
+									zIndex: isActive ? 10 : 1,
+								}}
+							>
+								<Image
+									src={src}
+									alt={`${ANGLE_LABELS[a]} view — ${s.toUpperCase()} body fit`}
+									fill
+									sizes="(max-width: 768px) 100vw, 500px"
+									className="object-contain object-center"
+									priority
+								/>
+							</div>
+						);
+					}),
+				)}
 			</div>
 		</div>
 	);
