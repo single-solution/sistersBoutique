@@ -105,8 +105,8 @@ export function FitPreview({ measurements, angle = "front", className = "" }: Fi
 									src={src}
 									alt={`${ANGLE_LABELS[a]} view — ${s.toUpperCase()} body fit`}
 									fill
-									sizes="(max-width: 768px) 100vw, 500px"
-									className="object-contain object-center"
+									sizes="(max-width: 768px) 100vw, 600px"
+									className="object-cover object-center"
 									priority
 								/>
 							</div>

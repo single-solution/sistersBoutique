@@ -63,17 +63,20 @@ export function SizeFinder({ chart, measurements, unit, onUnitChange, onChange, 
 	};
 
 	return (
-		<div className={`space-y-3 select-none ${className}`}>
+		<div className={`space-y-4 select-none ${className}`}>
 			{/* Unit Toggle inside Slider Card */}
 			{onUnitChange && (
-				<div className="flex items-center justify-between pb-2.5 border-b border-[var(--color-ink-100)]">
-					<span className="text-[10.5px] font-extrabold uppercase tracking-wider text-[var(--color-ink-700)]">Unit</span>
-					<div className="flex overflow-hidden rounded-full border border-[var(--color-ink-200)] bg-white/90 p-0.5 shadow-2xs" aria-label="Unit toggle">
+				<div className="flex items-center justify-between pb-3 border-b border-[var(--color-ink-100)]">
+					<div>
+						<span className="text-[11px] font-extrabold uppercase tracking-wider text-[var(--color-ink-900)]">Unit System</span>
+						<p className="text-[10px] text-[var(--color-ink-500)]">Select measurement unit</p>
+					</div>
+					<div className="flex overflow-hidden rounded-full border border-[var(--color-ink-200)] bg-white p-0.5 shadow-2xs" aria-label="Unit toggle">
 						<button
 							type="button"
 							onClick={() => onUnitChange("in")}
 							className={classNames(
-								"rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase transition-colors",
+								"rounded-full px-3 py-1 text-[10.5px] font-extrabold uppercase transition-colors",
 								unit === "in" ? "bg-[var(--color-ink-900)] text-white shadow-2xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]",
 							)}
 						>
@@ -83,7 +86,7 @@ export function SizeFinder({ chart, measurements, unit, onUnitChange, onChange, 
 							type="button"
 							onClick={() => onUnitChange("cm")}
 							className={classNames(
-								"rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase transition-colors",
+								"rounded-full px-3 py-1 text-[10.5px] font-extrabold uppercase transition-colors",
 								unit === "cm" ? "bg-[var(--color-ink-900)] text-white shadow-2xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]",
 							)}
 						>
@@ -93,7 +96,7 @@ export function SizeFinder({ chart, measurements, unit, onUnitChange, onChange, 
 				</div>
 			)}
 
-			<div className="space-y-3">
+			<div className="space-y-4">
 				{fields.map((field) => {
 					const valInches = measurements[field.key] ?? field.defaultVal;
 					const currentVal = displayValue(valInches, unit);
@@ -102,12 +105,12 @@ export function SizeFinder({ chart, measurements, unit, onUnitChange, onChange, 
 					const step = unit === "cm" ? 0.5 : 0.5;
 
 					return (
-						<div key={field.key} className="space-y-1">
+						<div key={field.key} className="space-y-1.5">
 							<div className="flex items-center justify-between text-xs font-semibold text-[var(--color-ink-900)]">
-								<label htmlFor={`slider-${field.key}`} className="text-[10.5px] font-bold uppercase tracking-wider text-[var(--color-ink-700)]">
+								<label htmlFor={`slider-${field.key}`} className="text-[11px] font-extrabold uppercase tracking-wider text-[var(--color-ink-800)]">
 									{field.label}
 								</label>
-								<span className="rounded bg-white/90 px-2 py-0.5 font-mono text-[11px] font-extrabold text-[var(--color-ink-900)] shadow-2xs">
+								<span className="rounded-md bg-white px-2.5 py-0.5 font-mono text-[11.5px] font-black text-[var(--color-ink-900)] shadow-2xs border border-[var(--color-ink-100)]">
 									{currentVal} {unit}
 								</span>
 							</div>
@@ -120,7 +123,7 @@ export function SizeFinder({ chart, measurements, unit, onUnitChange, onChange, 
 								step={step}
 								value={currentVal}
 								onChange={(e) => handleSlider(field.key, Number.parseFloat(e.target.value))}
-								className="w-full accent-[var(--color-ink-900)] cursor-pointer h-1.5 rounded-lg bg-[var(--color-ink-200)]/80"
+								className="w-full accent-[var(--color-ink-900)] cursor-pointer h-2 rounded-lg bg-[var(--color-ink-200)]"
 							/>
 						</div>
 					);

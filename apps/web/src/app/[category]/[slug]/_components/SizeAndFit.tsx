@@ -105,8 +105,8 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 								className="absolute inset-0 bg-black/65 backdrop-blur-xs transition-opacity"
 							/>
 
-							{/* Portrait Modal Container (Height 80vh, Width matching 896:1200 model image aspect ratio) */}
-							<div className="relative flex h-[80vh] max-h-[80vh] aspect-[896/1200] w-[calc(80vh*896/1200)] max-w-[92vw] flex-col overflow-hidden rounded-3xl border border-[#e5e1dc] bg-[#f5f3f0] shadow-2xl animate-dialog-in">
+							{/* Portrait Modal Container (Calculated exact 896:1200 width based on available 80vh image height so ZERO side padding exists on mobile & desktop) */}
+							<div className="relative flex h-[80vh] max-h-[80vh] w-[calc((80vh-49px)*896/1200)] max-w-[94vw] flex-col overflow-hidden rounded-3xl border border-[#e5e1dc] bg-[#f5f3f0] shadow-2xl animate-dialog-in">
 								{/* ── Header with Title (Left) & Tab Switcher + Close Icon (Right) ── */}
 								<div className="flex shrink-0 items-center justify-between border-b border-[#e5e1dc]/80 bg-[#f5f3f0]/90 px-4 sm:px-5 py-3 backdrop-blur-md z-30">
 									<h2 className="text-sm sm:text-base font-bold text-[var(--color-ink-900)]">Size &amp; Fit</h2>
@@ -153,7 +153,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 
 								{/* ── Main Modal Content ── */}
 								{activeTab === "fit" ? (
-									/* VISUAL FIT VIEW (Full-Bleed Image with Animated Collapsible Slider Card) */
+									/* VISUAL FIT VIEW (Full-Bleed Image with Parameter Card Morphing directly from top-left button) */
 									<div className="relative flex-1 w-full h-full overflow-hidden bg-[#f5f3f0] select-none p-0 m-0">
 										{/* Full-bleed Portrait Fit Preview Model Image */}
 										<FitPreview
@@ -166,38 +166,43 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 										{/* Top Left Floating Collapsible Trigger Button */}
 										<button
 											type="button"
-											onClick={() => setIsSlidersOpen((prev) => !prev)}
-											className="absolute top-4 left-4 z-30 inline-flex items-center gap-1.5 rounded-full border border-white/80 bg-white/85 px-3 py-1.5 text-[10.5px] sm:text-[11px] font-extrabold uppercase tracking-wider text-[var(--color-ink-900)] shadow-md backdrop-blur-md transition-all hover:bg-white"
+											onClick={() => setIsSlidersOpen(true)}
+											className={classNames(
+												"absolute top-4 left-4 z-30 inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/90 px-4 py-2 text-xs font-extrabold uppercase tracking-wider text-[var(--color-ink-900)] shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-white hover:scale-105 active:scale-95 origin-top-left",
+												isSlidersOpen ? "opacity-0 scale-75 pointer-events-none" : "opacity-100 scale-100 pointer-events-auto",
+											)}
 											aria-expanded={isSlidersOpen}
-											aria-label="Toggle fit parameters"
+											aria-label="Open fit parameters"
 										>
-											<SlidersHorizontal size={13} />
+											<SlidersHorizontal size={15} />
 											<span>Fit Parameters</span>
-											<ChevronLeft size={13} className={classNames("transition-transform duration-300", !isSlidersOpen && "rotate-180")} />
 										</button>
 
-										{/* Smooth Animated Collapsible Slider Card Overlay (Reveals from Left Side over Image) */}
+										{/* Bigger Smooth Animated Collapsible Slider Card Overlay (Morphs/Reveals directly from Top Left Button) */}
 										<div
 											className={classNames(
-												"absolute top-14 left-4 z-30 flex max-h-[calc(100%-4.5rem)] w-[260px] sm:w-[280px] flex-col rounded-2xl border border-white/80 bg-white/90 p-3.5 shadow-xl backdrop-blur-md transition-all duration-300 ease-in-out select-none",
+												"absolute top-4 left-4 z-40 flex max-h-[calc(100%-2rem)] w-[min(340px,calc(100%-2rem))] flex-col rounded-3xl border border-white/90 bg-white/95 p-4 sm:p-5 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-out origin-top-left select-none",
 												isSlidersOpen
-													? "opacity-100 translate-x-0 pointer-events-auto"
-													: "opacity-0 -translate-x-6 pointer-events-none scale-95",
+													? "opacity-100 scale-100 translate-x-0 pointer-events-auto"
+													: "opacity-0 scale-75 -translate-x-4 pointer-events-none",
 											)}
 										>
-											<div className="flex items-center justify-between pb-2 border-b border-[var(--color-ink-100)]">
-												<h3 className="text-[11px] font-extrabold uppercase tracking-wider text-[var(--color-ink-900)]">Adjust Measurements</h3>
+											<div className="flex items-center justify-between pb-3 border-b border-[var(--color-ink-100)]">
+												<div className="flex items-center gap-2">
+													<SlidersHorizontal size={15} className="text-[var(--color-ink-900)]" />
+													<h3 className="text-xs font-extrabold uppercase tracking-wider text-[var(--color-ink-900)]">Fit Parameters</h3>
+												</div>
 												<button
 													type="button"
 													onClick={() => setIsSlidersOpen(false)}
-													className="rounded-full p-1 text-[var(--color-ink-500)] hover:bg-[var(--color-ink-100)] hover:text-[var(--color-ink-900)]"
+													className="rounded-full p-1.5 text-[var(--color-ink-500)] hover:bg-[var(--color-ink-100)] hover:text-[var(--color-ink-900)] transition-colors"
 													aria-label="Close fit parameters"
 												>
-													<X size={14} />
+													<X size={16} />
 												</button>
 											</div>
 
-											<div className="flex-1 overflow-y-auto overscroll-contain pt-3 pr-1 space-y-3 custom-scrollbar">
+											<div className="flex-1 overflow-y-auto overscroll-contain pt-4 pr-1 space-y-4 custom-scrollbar">
 												{chart && (
 													<SizeFinder chart={chart} measurements={measurements} unit={unit} onUnitChange={setUnit} onChange={setMeasurements} />
 												)}
