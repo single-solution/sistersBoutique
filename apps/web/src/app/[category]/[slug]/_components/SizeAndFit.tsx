@@ -44,6 +44,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 	const [isMounted, setIsMounted] = useState(false);
 	const [isSlidersOpen, setIsSlidersOpen] = useState(false);
 	const [measurements, setMeasurements] = useState<BodyMeasurements>(() => ({ ...DEFAULT_BODY_INPUT_MEASUREMENTS }));
+	const [userInteracted, setUserInteracted] = useState(false);
 
 	useEffect(() => {
 		setIsMounted(true);
@@ -71,7 +72,9 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 	const recommended = useMemo(() => (chart ? recommendSize(chart, measurements) : null), [chart, measurements]);
 	const selectedRow = useMemo(() => chart?.rows.find((row) => row.sizeValue === selectedSizeValue) ?? null, [chart, selectedSizeValue]);
 
-	const previewRow = selectedRow ?? recommended;
+	// Prefer recommended if user has interacted with the sliders, otherwise default to the size selected on PDP
+	const previewRow = userInteracted ? recommended : (selectedRow ?? recommended);
+	
 	const previewBust = measurements.bust ?? previewRow?.values.bust ?? DEFAULT_BODY_MEASUREMENTS.bust;
 	const previewWaist = measurements.waist ?? previewRow?.values.waist ?? DEFAULT_BODY_MEASUREMENTS.waist;
 	const previewHip = measurements.hip ?? previewRow?.values.hip ?? DEFAULT_BODY_MEASUREMENTS.hip;
@@ -105,10 +108,14 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 								className="absolute inset-0 bg-black/65 backdrop-blur-xs transition-opacity"
 							/>
 
-							{/* Portrait Modal Container (Calculated exact 896:1200 width based on available 80vh image height so ZERO side padding exists on mobile & desktop) */}
-							<div className="relative flex h-[80vh] max-h-[80vh] w-[calc((80vh-49px)*896/1200)] max-w-[94vw] flex-col overflow-hidden rounded-3xl border border-[#e5e1dc] bg-[#f5f3f0] shadow-2xl animate-dialog-in">
+							{/* 
+							  Bigger Modal Container: 
+							  We use 88vh max height on desktop, and constrain max-width to 95vw for mobile.
+							  The inner content uses `aspect-[896/1200]` so it strictly preserves the image ratio and guarantees ZERO side-padding on all devices.
+							*/}
+							<div className="relative flex max-h-[88vh] w-[calc((88vh-49px)*896/1200)] max-w-[95vw] flex-col overflow-hidden rounded-3xl border border-[#e5e1dc] bg-[#f5f3f0] shadow-2xl animate-dialog-in">
 								{/* ── Header with Title (Left) & Tab Switcher + Close Icon (Right) ── */}
-								<div className="flex shrink-0 items-center justify-between border-b border-[#e5e1dc]/80 bg-[#f5f3f0]/90 px-4 sm:px-5 py-3 backdrop-blur-md z-30">
+								<div className="flex shrink-0 h-[49px] items-center justify-between border-b border-[#e5e1dc]/80 bg-[#f5f3f0]/90 px-4 sm:px-5 py-3 backdrop-blur-md z-30">
 									<h2 className="text-sm sm:text-base font-bold text-[var(--color-ink-900)]">Size &amp; Fit</h2>
 
 									<div className="flex items-center gap-2 sm:gap-3">
@@ -153,8 +160,8 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 
 								{/* ── Main Modal Content ── */}
 								{activeTab === "fit" ? (
-									/* VISUAL FIT VIEW (Full-Bleed Image with Parameter Card Morphing directly from top-left button) */
-									<div className="relative flex-1 w-full h-full overflow-hidden bg-[#f5f3f0] select-none p-0 m-0">
+									/* VISUAL FIT VIEW (Strict Aspect Ratio Image Container) */
+									<div className="relative w-full aspect-[896/1200] overflow-hidden bg-[#f5f3f0] select-none p-0 m-0">
 										{/* Full-bleed Portrait Fit Preview Model Image */}
 										<FitPreview
 											measurements={{ bust: previewBust, waist: previewWaist, hip: previewHip }}
@@ -211,7 +218,16 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 
 											<div className="flex-1 overflow-y-auto overscroll-contain pt-4 pr-1 space-y-4 custom-scrollbar">
 												{chart && (
-													<SizeFinder chart={chart} measurements={measurements} unit={unit} onUnitChange={setUnit} onChange={setMeasurements} />
+													<SizeFinder 
+														chart={chart} 
+														measurements={measurements} 
+														unit={unit} 
+														onUnitChange={setUnit} 
+														onChange={(m) => {
+															setMeasurements(m);
+															setUserInteracted(true);
+														}} 
+													/>
 												)}
 											</div>
 										</div>
@@ -246,8 +262,8 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 										)}
 									</div>
 								) : (
-									/* SIZE TABLE VIEW (Portrait Layout matching Modal Ratio) */
-									<div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 bg-white space-y-4">
+									/* SIZE TABLE VIEW (Strict Aspect Ratio layout) */
+									<div className="w-full aspect-[896/1200] overflow-y-auto overscroll-contain p-4 sm:p-5 bg-white space-y-4">
 										{chart && <SizeGuide chart={chart} selectedSizeValue={selectedSizeValue} />}
 									</div>
 								)}
