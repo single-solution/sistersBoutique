@@ -25,7 +25,7 @@ interface FitPreviewProps {
 export const ANGLES: ViewAngle[] = ["front", "side", "back"];
 export const ANGLE_LABELS: Record<ViewAngle, string> = { front: "Front", side: "Side", back: "Back" };
 
-export const IMAGE_MATRIX: Record<ViewAngle, Partial<Record<BodySize, string>>> = {
+export const IMAGE_MATRIX: Record<ViewAngle, Record<BodySize, string>> = {
 	front: {
 		xs: "/images/fit-models/front-xs.jpg",
 		s: "/images/fit-models/front-s.jpg",
@@ -38,8 +38,15 @@ export const IMAGE_MATRIX: Record<ViewAngle, Partial<Record<BodySize, string>>> 
 		s: "/images/fit-models/side-s.jpg",
 		m: "/images/fit-models/side-m.jpg",
 		l: "/images/fit-models/side-l.jpg",
+		xl: "/images/fit-models/side-xl.jpg",
 	},
-	back: {},
+	back: {
+		xs: "/images/fit-models/back-xs.jpg",
+		s: "/images/fit-models/back-s.jpg",
+		m: "/images/fit-models/back-m.jpg",
+		l: "/images/fit-models/back-l.jpg",
+		xl: "/images/fit-models/back-xl.jpg",
+	},
 };
 
 export function hasAngleImages(angle: ViewAngle): boolean {
