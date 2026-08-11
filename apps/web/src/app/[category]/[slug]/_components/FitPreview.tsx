@@ -121,7 +121,7 @@ export function FitPreview({ measurements, garment, angle = "front", predictedSi
 									alt={`${ANGLE_LABELS[a]} view — ${s.toUpperCase()} body fit`}
 									fill
 									sizes="(max-width: 768px) 100vw, 600px"
-									className="object-cover object-center"
+									className="object-contain object-center"
 									priority
 								/>
 							</div>

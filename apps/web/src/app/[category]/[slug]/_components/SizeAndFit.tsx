@@ -113,7 +113,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 							  We use 88vh max height on desktop, and constrain max-width to 95vw for mobile.
 							  The inner content uses `aspect-[896/1200]` so it strictly preserves the image ratio and guarantees ZERO side-padding on all devices.
 							*/}
-							<div className="relative flex max-h-[88vh] w-[calc((88vh-49px)*896/1200)] max-w-[95vw] flex-col overflow-hidden rounded-3xl border border-[#e5e1dc] bg-[#f5f3f0] shadow-2xl animate-dialog-in">
+							<div className="relative flex max-h-[88dvh] w-[calc((88dvh-49px)*896/1200)] max-w-[95vw] flex-col overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl border border-[#e5e1dc] bg-[#f5f3f0] shadow-2xl animate-dialog-in">
 								{/* ── Header with Title (Left) & Tab Switcher + Close Icon (Right) ── */}
 								<div className="flex shrink-0 h-[49px] items-center justify-between border-b border-[#e5e1dc]/80 bg-[#f5f3f0]/90 px-4 sm:px-5 py-3 backdrop-blur-md z-30">
 									<h2 className="text-sm sm:text-base font-bold text-[var(--color-ink-900)]">Size &amp; Fit</h2>
@@ -195,7 +195,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 										{/* Bigger Smooth Animated Collapsible Slider Card Overlay (Morphs/Reveals directly from Top Left Button) */}
 										<div
 											className={classNames(
-												"absolute top-4 left-4 z-40 flex max-h-[calc(100%-2rem)] w-[min(340px,calc(100%-2rem))] flex-col rounded-3xl border border-white/90 bg-white/95 p-4 sm:p-5 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-out origin-top-left select-none",
+												"absolute top-4 left-4 z-40 flex max-h-[calc(100%-2rem)] w-[min(340px,calc(100%-2rem))] flex-col rounded-xl md:rounded-3xl border border-white/90 bg-white/95 p-4 sm:p-5 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-out origin-top-left select-none",
 												isSlidersOpen
 													? "opacity-100 scale-100 translate-x-0 pointer-events-auto"
 													: "opacity-0 scale-75 -translate-x-4 pointer-events-none",
