@@ -105,7 +105,7 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 							/>
 
 							{/* Spacious Modal Container */}
-							<div className="relative flex h-[90vh] max-h-[780px] w-full max-w-[1040px] flex-col overflow-hidden rounded-3xl border border-[#e5e1dc] bg-[#f5f3f0] shadow-2xl animate-dialog-in">
+							<div className="relative flex h-[80vh] max-h-[720px] w-full max-w-[1040px] flex-col overflow-hidden rounded-3xl border border-[#e5e1dc] bg-[#f5f3f0] shadow-2xl animate-dialog-in">
 								{/* ── Header with Title (Left) & Tab Switcher + Close Icon (Right) ── */}
 								<div className="flex shrink-0 items-center justify-between border-b border-[#e5e1dc]/80 bg-[#f5f3f0]/90 px-5 sm:px-6 py-4 backdrop-blur-md z-30">
 									<h2 className="text-base sm:text-lg font-bold text-[var(--color-ink-900)]">Size &amp; Fit Guidance</h2>
@@ -154,44 +154,18 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 								{activeTab === "fit" ? (
 									/* VISUAL FIT VIEW (2 Equal Panes Layout) */
 									<div className="flex flex-col sm:flex-row flex-1 overflow-hidden bg-[#f5f3f0]">
-										{/* LEFT PANE: Parameter Sliders with IN/CM Unit Toggle at Top (Inner Scrollable) */}
+										{/* LEFT PANE: Parameter Sliders with IN/CM Unit Toggle inside Card (Inner Scrollable) */}
 										<div className="w-full sm:w-1/2 flex flex-col border-b sm:border-b-0 sm:border-r border-[#e5e1dc]/80 bg-[#f5f3f0] overflow-hidden">
 											<div className="flex-1 overflow-y-auto overscroll-contain p-5 sm:p-6 space-y-4 touch-pan-y">
-												{/* Unit Toggle & Section Title Header */}
-												<div className="flex items-center justify-between pb-2 border-b border-[#e5e1dc]/80">
-													<div>
-														<h3 className="text-xs font-extrabold uppercase tracking-wider text-[var(--color-ink-800)]">Fit Parameters</h3>
-														<p className="text-[10.5px] text-[var(--color-ink-500)]">Adjust sliders to customize your fit preview.</p>
-													</div>
-
-													{/* IN / CM Toggle in Left Pane */}
-													<div className="flex overflow-hidden rounded-full border border-[var(--color-ink-200)] bg-white/80 p-0.5 shadow-2xs" aria-label="Unit toggle">
-														<button
-															type="button"
-															onClick={() => setUnit("in")}
-															className={classNames(
-																"rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase transition-colors",
-																unit === "in" ? "bg-[var(--color-ink-900)] text-white shadow-2xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]",
-															)}
-														>
-															IN
-														</button>
-														<button
-															type="button"
-															onClick={() => setUnit("cm")}
-															className={classNames(
-																"rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase transition-colors",
-																unit === "cm" ? "bg-[var(--color-ink-900)] text-white shadow-2xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]",
-															)}
-														>
-															CM
-														</button>
-													</div>
+												{/* Section Title Header */}
+												<div className="pb-2 border-b border-[#e5e1dc]/80">
+													<h3 className="text-xs font-extrabold uppercase tracking-wider text-[var(--color-ink-800)]">Fit Parameters</h3>
+													<p className="text-[10.5px] text-[var(--color-ink-500)]">Adjust sliders to customize your fit preview.</p>
 												</div>
 
 												{chart && (
 													<div className="rounded-2xl border border-white/80 bg-white/70 p-4 shadow-xs backdrop-blur-md">
-														<SizeFinder chart={chart} measurements={measurements} unit={unit} onChange={setMeasurements} />
+														<SizeFinder chart={chart} measurements={measurements} unit={unit} onUnitChange={setUnit} onChange={setMeasurements} />
 													</div>
 												)}
 											</div>
@@ -216,16 +190,16 @@ export function SizeAndFit({ garmentType, chart, selectedSizeValue, fabricLabel,
 												</div>
 											)}
 
-											{/* Bottom Right Floating Overlay: Clean Simple Angle Toggle */}
+											{/* Bottom Right Floating Overlay: Vertical Clean Angle Toggle */}
 											{availableAngles.length > 1 && (
-												<div className="absolute bottom-4 right-4 z-20 flex items-center gap-1 rounded-full border border-white/80 bg-white/80 p-1 shadow-md backdrop-blur-md" aria-label="View angle">
+												<div className="absolute bottom-4 right-4 z-20 flex flex-col items-center gap-1 rounded-2xl border border-white/80 bg-white/80 p-1 shadow-md backdrop-blur-md" aria-label="View angle">
 													{availableAngles.map((a) => (
 														<button
 															key={a}
 															type="button"
 															onClick={() => setAngle(a)}
 															className={classNames(
-																"rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider transition-all",
+																"w-full rounded-xl px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider transition-all text-center",
 																a === angle ? "bg-[var(--color-ink-900)] text-white shadow-2xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]",
 															)}
 														>

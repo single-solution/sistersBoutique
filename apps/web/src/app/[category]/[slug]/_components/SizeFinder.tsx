@@ -43,7 +43,7 @@ function getRangeForKey(chart: SizeChart, key: string): { min: number; max: numb
 	return { min: 15, max: 55, defaultVal: 38 };
 }
 
-export function SizeFinder({ chart, measurements, unit, onChange, className = "" }: SizeFinderProps) {
+export function SizeFinder({ chart, measurements, unit, onUnitChange, onChange, className = "" }: SizeFinderProps) {
 	// Dynamically build slider fields ONLY for measurement keys present in the size chart table
 	const fields = chart.measurementKeys.map((col) => {
 		const range = getRangeForKey(chart, col.key);
@@ -63,6 +63,35 @@ export function SizeFinder({ chart, measurements, unit, onChange, className = ""
 
 	return (
 		<div className={`space-y-3 select-none ${className}`}>
+			{/* Unit Toggle inside Slider Card */}
+			{onUnitChange && (
+				<div className="flex items-center justify-between pb-2.5 border-b border-[var(--color-ink-100)]">
+					<span className="text-[10.5px] font-extrabold uppercase tracking-wider text-[var(--color-ink-700)]">Unit</span>
+					<div className="flex overflow-hidden rounded-full border border-[var(--color-ink-200)] bg-white/90 p-0.5 shadow-2xs" aria-label="Unit toggle">
+						<button
+							type="button"
+							onClick={() => onUnitChange("in")}
+							className={classNames(
+								"rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase transition-colors",
+								unit === "in" ? "bg-[var(--color-ink-900)] text-white shadow-2xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]",
+							)}
+						>
+							IN
+						</button>
+						<button
+							type="button"
+							onClick={() => onUnitChange("cm")}
+							className={classNames(
+								"rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase transition-colors",
+								unit === "cm" ? "bg-[var(--color-ink-900)] text-white shadow-2xs" : "text-[var(--color-ink-600)] hover:text-[var(--color-ink-900)]",
+							)}
+						>
+							CM
+						</button>
+					</div>
+				</div>
+			)}
+
 			<div className="space-y-3">
 				{fields.map((field) => {
 					const valInches = measurements[field.key] ?? field.defaultVal;
