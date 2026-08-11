@@ -47,14 +47,14 @@ export function SizeGuide({ chart, selectedSizeValue }: SizeGuideProps) {
 			</div>
 
 			<div className="overflow-x-auto rounded-xl border border-[var(--color-ink-100)]">
-				<table className="w-full border-collapse text-left text-[13px]">
+				<table className="w-full border-collapse text-left text-[12.5px]">
 					<thead>
-						<tr className="border-b border-[var(--color-ink-200)] bg-[var(--color-ink-50)] text-[11px] uppercase tracking-[0.1em] text-[var(--color-ink-500)]">
-							<th scope="col" className="py-2.5 pl-4 pr-3 font-semibold">
+						<tr className="border-b border-[var(--color-ink-200)] bg-[var(--color-ink-50)] text-[11px] uppercase tracking-[0.08em] text-[var(--color-ink-500)]">
+							<th scope="col" className="py-2.5 pl-3.5 pr-2 font-semibold w-1">
 								Size
 							</th>
 							{chart.measurementKeys.map((column) => (
-								<th key={column.key} scope="col" className="px-3 py-2.5 font-semibold whitespace-nowrap">
+								<th key={column.key} scope="col" className="px-2.5 py-2.5 font-semibold text-center whitespace-nowrap">
 									{column.label}
 								</th>
 							))}
@@ -67,20 +67,26 @@ export function SizeGuide({ chart, selectedSizeValue }: SizeGuideProps) {
 								<tr
 									key={row.sizeValue}
 									className={classNames(
-										"border-b border-[var(--color-ink-100)] last:border-b-0",
-										isSelected ? "bg-[var(--color-accent-50)] text-[var(--color-ink-900)]" : "text-[var(--color-ink-700)]",
+										"border-b border-[var(--color-ink-100)] last:border-b-0 transition-colors",
+										isSelected ? "bg-[var(--color-accent-50)]/70" : "hover:bg-[var(--color-ink-50)]/50",
 									)}
 								>
-									<th scope="row" className="py-2.5 pl-4 pr-3 font-semibold whitespace-nowrap">
-										<span className="inline-flex items-center gap-1.5">
-											{row.label}
-											{isSelected ? (
-												<span className="rounded-full bg-[var(--color-accent-600)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] text-white">Your size</span>
-											) : null}
-										</span>
+									<th scope="row" className="py-2.5 pl-3.5 pr-2 font-semibold text-[var(--color-ink-800)] whitespace-nowrap">
+										<div className="flex items-center gap-2">
+											<span>{row.label}</span>
+											{isSelected && (
+												<span className="rounded-full bg-[var(--color-accent-600)] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.04em] text-white">Your size</span>
+											)}
+										</div>
 									</th>
 									{chart.measurementKeys.map((column) => (
-										<td key={column.key} className="px-3 py-2.5 tabular-nums">
+										<td
+											key={column.key}
+											className={classNames(
+												"px-2.5 py-2.5 text-center tabular-nums whitespace-nowrap",
+												isSelected ? "font-bold text-[var(--color-ink-900)]" : "text-[var(--color-ink-700)]",
+											)}
+										>
 											{formatValue(row.values[column.key])}
 										</td>
 									))}
