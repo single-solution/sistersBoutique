@@ -934,9 +934,9 @@
 	align-items: center;
 	gap: 0.4rem;
 	font-family: var(--font-headline), serif;
-	font-size: 0.56rem;
+	font-size: 0.65rem;
 	font-weight: 600;
-	letter-spacing: 0.14em;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
 	white-space: nowrap;
 	color: var(--color-ink-500);

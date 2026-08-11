@@ -624,8 +624,6 @@ body {
 	background-color: var(--color-canvas);
 	color: var(--color-ink-800);
 	font-family: var(--font-headline);
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
 	/* Words never split mid-character; lines wrap at word boundaries. Long
      unbroken strings (URLs, IBANs, hashes) are allowed to wrap at any
      point so they don't overflow their container.

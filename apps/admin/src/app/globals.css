@@ -182,8 +182,6 @@ html,
 body {
 	background-color: var(--color-canvas);
 	color: var(--color-ink-800);
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
 }
 
 html {
