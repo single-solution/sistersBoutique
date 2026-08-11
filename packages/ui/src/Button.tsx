@@ -21,18 +21,18 @@ type ButtonLinkProps = ButtonOwnProps &
 	};
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-	primary: "bg-[var(--color-accent-500)] font-semibold text-[var(--color-accent-50)] hover:bg-[var(--color-accent-600)] focus-visible:ring-[var(--color-accent-700)]",
-	secondary: "bg-[var(--color-ink-900)] font-semibold text-[var(--color-canvas)] hover:bg-[var(--color-ink-800)] focus-visible:ring-[var(--color-ink-700)]",
+	primary: "bg-[var(--color-accent-500)] font-semibold 2xl:font-bold text-[var(--color-accent-50)] hover:bg-[var(--color-accent-600)] focus-visible:ring-[var(--color-accent-700)]",
+	secondary: "bg-[var(--color-ink-900)] font-semibold 2xl:font-bold text-[var(--color-canvas)] hover:bg-[var(--color-ink-800)] focus-visible:ring-[var(--color-ink-700)]",
 	outline:
 		"border border-[var(--color-ink-200)] bg-[var(--color-surface)] text-[var(--color-ink-800)] hover:border-[var(--color-accent-300)] hover:text-[var(--color-accent-800)] focus-visible:ring-[var(--color-accent-300)]",
 	ghost: "bg-transparent text-[var(--color-ink-700)] hover:bg-[var(--color-canvas-deep)] hover:text-[var(--color-accent-800)] focus-visible:ring-[var(--color-ink-300)]",
-	danger: "bg-[var(--color-danger-500)] font-semibold text-white hover:bg-[var(--color-danger-700)] focus-visible:ring-[var(--color-danger-500)]",
+	danger: "bg-[var(--color-danger-500)] font-semibold 2xl:font-bold text-white hover:bg-[var(--color-danger-700)] focus-visible:ring-[var(--color-danger-500)]",
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-	sm: "h-9 px-3 text-sm",
-	md: "h-11 px-5 text-sm",
-	lg: "h-13 px-7 text-base",
+	sm: "h-9 px-3 text-sm 2xl:text-[15px]",
+	md: "h-11 px-5 text-sm 2xl:text-[15px]",
+	lg: "h-13 px-7 text-base 2xl:text-[17px]",
 };
 
 export function Button({ variant = "primary", size = "md", isLoading = false, leadingIcon, trailingIcon, className, disabled, children, ...rest }: ButtonProps) {
