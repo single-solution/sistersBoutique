@@ -9,6 +9,7 @@ interface SizeFinderProps {
 	chart: SizeChart;
 	measurements: BodyMeasurements;
 	unit: MeasurementUnit;
+	onUnitChange?: (unit: MeasurementUnit) => void;
 	onChange: (next: BodyMeasurements) => void;
 	className?: string;
 }
