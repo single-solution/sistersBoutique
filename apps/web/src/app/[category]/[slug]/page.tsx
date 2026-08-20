@@ -115,12 +115,13 @@ const loadRelatedProducts = cache(async (product: Product): Promise<Product[]> =
 export default async function ProductDetailPage({ params, searchParams }: ProductDetailPageProps) {
 	const [{ category, slug }, search] = await Promise.all([params, searchParams]);
 
-	const [categoryMeta, product, allAttributes, liveVariants, sizeChart] = await Promise.all([
+	const [categoryMeta, product, allAttributes, liveVariants, sizeChart, seoSettings] = await Promise.all([
 		getCategoryBySlugCached(category),
 		getProductBySlugCached(slug),
 		getAttributesCached(),
 		getProductLiveCommerce(slug),
 		getProductSizeChartCached(slug),
+		getSeoSettings(),
 	]);
 
 	if (!categoryMeta) {
@@ -141,9 +142,8 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
 		redirect(productHref(storefrontProduct));
 	}
 
-	const [brand, seoSettings, related] = await Promise.all([
+	const [brand, related] = await Promise.all([
 		getBrandBySlugCached(storefrontProduct.brandSlug, storefrontProduct.categorySlug),
-		getSeoSettings(),
 		loadRelatedProducts(storefrontProduct),
 	]);
 	const brandName = brand?.name ?? storefrontProduct.brandSlug;

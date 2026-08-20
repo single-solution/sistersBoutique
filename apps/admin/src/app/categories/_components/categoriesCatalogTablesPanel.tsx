@@ -128,6 +128,16 @@ export function CategoriesCatalogTablesPanel({
 
 				<div className="mt-2 flex flex-wrap gap-1.5" role="tablist" aria-label="Catalog sections">
 					<CatalogTabChip
+						label="Brands"
+						count={selectedNav?.brandCount ?? 0}
+						isActive={activeTab === "brands"}
+						onClick={() => {
+							setActiveTab("brands");
+							setRowQuery("");
+							setTabUrl("brands");
+						}}
+					/>
+					<CatalogTabChip
 						label="Attributes"
 						count={selectedNav?.attributeCount ?? 0}
 						isActive={activeTab === "attributes"}
